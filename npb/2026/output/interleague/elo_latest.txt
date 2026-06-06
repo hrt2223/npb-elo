@@ -1,15 +1,15 @@
 2026 NPB Elo latest ranking - Interleague
-Updated at: 2026-06-06 11:58:47
+Updated at: 2026-06-06 15:58:59
 CSV: /home/runner/work/npb-elo/npb-elo/npb/2026/game_results_jp_2026.csv
-Games: 63
+Games: 64
 Period: 2026-05-26 - 2026-06-06
 
  rank   team final_elo
     1     西武    1601.8
     2 ソフトバンク    1555.6
-    3     巨人    1549.1
+    3     巨人    1547.2
     4   日本ハム    1538.0
-    5    ロッテ    1529.8
+    5    ロッテ    1531.7
     6     阪神    1525.0
     7   ヤクルト    1502.5
     8  オリックス    1480.7
