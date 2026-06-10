@@ -18,31 +18,19 @@ NPB_URL = "https://npb.jp/games/{year}/schedule_{month:02d}_detail.html"
 TODAY_URL = "https://npb.jp/games/{year}/"
 
 CSV_COLUMNS = [
-    "シーズン",
     "日付",
     "ゲームタイプ",
     "球団",
     "ホーム・ビジター",
-    "結果",
     "スコア",
     "対戦球団",
-    "R",
-    "H",
-    "E",
-    "ボックススコア",
-    "回戦",
-    "球場",
-    "試合開始",
-    "試合時間",
-    "入場者",
     "GameID",
 ]
 
-COL_SEASON = CSV_COLUMNS[0]
-COL_DATE = CSV_COLUMNS[1]
-COL_TEAM = CSV_COLUMNS[3]
-COL_HOME_AWAY = CSV_COLUMNS[4]
-COL_GAME_ID = CSV_COLUMNS[17]
+COL_DATE = "日付"
+COL_TEAM = "球団"
+COL_HOME_AWAY = "ホーム・ビジター"
+COL_GAME_ID = "GameID"
 
 TEAMS = {
     "阪神",
@@ -176,14 +164,6 @@ def make_game_id(date: str, home: str, away: str, same_day_index: int) -> str:
 
 def normalize_team(name: str) -> str:
     return FULL_TEAM_NAMES.get(name, name)
-
-
-def result_for(score: int, opponent_score: int) -> str:
-    if score > opponent_score:
-        return "W"
-    if score < opponent_score:
-        return "L"
-    return "D"
 
 
 def is_finished_game_context(tokens: list[str], start: int) -> bool:
@@ -406,47 +386,23 @@ def fetch_today_games(*, year: int = YEAR) -> list[ResultGame]:
 
 
 def game_to_rows(game: ResultGame) -> list[dict[str, object]]:
-    home_result = result_for(game.home_score, game.away_score)
-    away_result = result_for(game.away_score, game.home_score)
     return [
         {
-            "シーズン": YEAR,
             "日付": game.date,
             "ゲームタイプ": "公式戦",
             "球団": game.home,
             "ホーム・ビジター": "ホーム",
-            "結果": home_result,
             "スコア": game.home_score,
             "対戦球団": game.away,
-            "R": game.home_score,
-            "H": "",
-            "E": "",
-            "ボックススコア": "",
-            "回戦": "",
-            "球場": game.stadium,
-            "試合開始": game.start_time,
-            "試合時間": "",
-            "入場者": "",
             "GameID": game.game_id,
         },
         {
-            "シーズン": YEAR,
             "日付": game.date,
             "ゲームタイプ": "公式戦",
             "球団": game.away,
             "ホーム・ビジター": "ビジター",
-            "結果": away_result,
             "スコア": game.away_score,
             "対戦球団": game.home,
-            "R": game.away_score,
-            "H": "",
-            "E": "",
-            "ボックススコア": "",
-            "回戦": "",
-            "球場": game.stadium,
-            "試合開始": game.start_time,
-            "試合時間": "",
-            "入場者": "",
             "GameID": game.game_id,
         },
     ]
@@ -481,7 +437,7 @@ def write_csv_rows(path: Path, rows: list[dict[str, object]]) -> None:
         ),
     )
     with path.open("w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 

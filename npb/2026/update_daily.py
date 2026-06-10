@@ -63,6 +63,13 @@ EMPTY_OUTPUT_COLUMNS = {
 }
 
 
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(BASE_DIR))
+    except ValueError:
+        return str(path)
+
+
 def format_ranking(ranking_df) -> str:
     return ranking_df.to_string(index=False, formatters={"final_elo": "{:.1f}".format})
 
@@ -81,7 +88,7 @@ def write_latest_summary(
     lines = [
         f"2026 NPB Elo latest ranking - {label}",
         f"Updated at: {now}",
-        f"CSV: {csv_path}",
+        f"CSV: {display_path(csv_path)}",
         f"Games: {game_count}",
         f"Period: {start_date.date()} - {end_date.date()}",
         "",
@@ -97,7 +104,7 @@ def write_no_games_summary(output_dir: Path, *, label: str, csv_path: Path) -> N
     lines = [
         f"2026 NPB Elo latest ranking - {label}",
         f"Updated at: {now}",
-        f"CSV: {csv_path}",
+        f"CSV: {display_path(csv_path)}",
         "Games: 0",
         "",
         "No games found.",
@@ -128,7 +135,7 @@ def append_log(
         "=" * 72,
         f"Target: {label}",
         f"Updated at: {now}",
-        f"CSV: {csv_path}",
+        f"CSV: {display_path(csv_path)}",
         f"Games: {game_count}",
         f"Period: {start_date.date()} - {end_date.date()}",
         ranking_text,
@@ -145,7 +152,7 @@ def append_no_games_log(log_dir: Path, *, label: str, csv_path: Path) -> None:
         "=" * 72,
         f"Target: {label}",
         f"Updated at: {now}",
-        f"CSV: {csv_path}",
+        f"CSV: {display_path(csv_path)}",
         "Games: 0",
         "No games found.",
         "",
