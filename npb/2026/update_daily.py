@@ -43,8 +43,6 @@ EMPTY_OUTPUT_COLUMNS = {
         "away",
         "home_score",
         "away_score",
-        "stadium",
-        "start_time",
     ],
     "elo_final_ranking.csv": ["rank", "team", "final_elo"],
     "elo_by_game.csv": [
@@ -54,8 +52,6 @@ EMPTY_OUTPUT_COLUMNS = {
         "away",
         "home_score",
         "away_score",
-        "stadium",
-        "start_time",
         "home_elo_before",
         "away_elo_before",
         "home_expected_win_rate",

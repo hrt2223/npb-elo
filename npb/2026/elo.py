@@ -30,34 +30,33 @@ TEAM_SHORT_NAMES = {
 
 @dataclass(frozen=True)
 class Game:
-    date: pd.Timestamp
+    date: pd.Timestamp#日付
     game_id: str
     home: str
     away: str
-    home_score: int
-    away_score: int
-    stadium: str
-    start_time: str
+    home_score: int#ホームチームのスコア
+    away_score: int#ビジターチームのスコア
 
 
+#eloレーティングの予想勝率を計算する式
 def expected_score(rating_a: float, rating_b: float) -> float:
     """Return player/team A's expected score against B."""
-    return 1.0 / (1.0 + 10.0 ** ((rating_b - rating_a) / 400.0))
+    return 1.0 / (1.0 + 10.0 ** ((rating_b - rating_a) / 400.0))#めっちゃ大事な式
 
 
 def actual_score(score_a: int, score_b: int) -> float:
-    if score_a > score_b:
+    if score_a > score_b:#勝ち
         return 1.0
-    if score_a < score_b:
+    if score_a < score_b:#負け
         return 0.0
-    return 0.5
+    return 0.5#引き分け
 
 
 def update_ratings(
-    home_rating: float,
-    away_rating: float,
-    home_score: int,
-    away_score: int,
+    home_rating: float,#ホームチームのレーティング
+    away_rating: float,#ビジターチームのレーティング
+    home_score: int,#ホームチームのスコア
+    away_score: int,#ビジターチームのスコア
     *,
     k_factor: float = K_FACTOR,
     home_advantage: float = HOME_ADVANTAGE,
@@ -72,18 +71,18 @@ def update_ratings(
         change,
     )
 
-
+#チーム名を短縮する関数
 def short_team_name(name: str) -> str:
     return TEAM_SHORT_NAMES.get(name, name)
 
-
+#CSVを読み込んで、日付列を日付型に変換している
 def load_games(csv_path: Path, *, regular_season_only: bool = True) -> pd.DataFrame:
     df = pd.read_csv(csv_path, encoding="utf-8-sig")
     df["日付"] = pd.to_datetime(df["日付"])
 
     if regular_season_only and "ゲームタイプ" in df.columns:
         df = df[df["ゲームタイプ"] == "公式戦"].copy()
-
+#game_idごとにグループ化して、ホームとビジターチームの行を分けている
     games: list[Game] = []
     for game_id, group in df.groupby("GameID", sort=False):
         home_rows = group[group["ホーム・ビジター"] == "ホーム"]
@@ -95,6 +94,7 @@ def load_games(csv_path: Path, *, regular_season_only: bool = True) -> pd.DataFr
         home = home_rows.iloc[0]
         away = away_rows.iloc[0]
 
+#gameに試合の情報をつめてる。
         games.append(
             Game(
                 date=home["日付"],
@@ -103,8 +103,6 @@ def load_games(csv_path: Path, *, regular_season_only: bool = True) -> pd.DataFr
                 away=short_team_name(str(away["球団"])),
                 home_score=int(home["スコア"]),
                 away_score=int(away["スコア"]),
-                stadium=str(home.get("球場", "")),
-                start_time=str(home.get("試合開始", "")),
             )
         )
 
@@ -112,7 +110,7 @@ def load_games(csv_path: Path, *, regular_season_only: bool = True) -> pd.DataFr
         raise ValueError(f"No games were found in {csv_path}")
 
     game_df = pd.DataFrame([game.__dict__ for game in games])
-    return game_df.sort_values(["date", "start_time", "game_id"]).reset_index(drop=True)
+    return game_df.sort_values(["date", "game_id"]).reset_index(drop=True)
 
 
 def calculate_elo(
@@ -158,8 +156,6 @@ def calculate_elo(
                 "away": row.away,
                 "home_score": row.home_score,
                 "away_score": row.away_score,
-                "stadium": row.stadium,
-                "start_time": row.start_time,
                 "home_elo_before": old_home,
                 "away_elo_before": old_away,
                 "home_expected_win_rate": expected_home,
