@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+
+# Local run logs. GitHub Actions keeps its own logs.
+npb/2026/logs/
+
+# Local editor / Codex workspace state.
+.agents/
+.codex/
