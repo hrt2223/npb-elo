@@ -43,6 +43,7 @@ jobs:
           python make_elo_tables.py
           python make_elo_graphs.py
           python update_today_probabilities.py
+          python fetch_standings_2026.py
           python make_site.py
 
       - name: Commit updated results

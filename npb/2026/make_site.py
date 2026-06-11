@@ -11,6 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 SITE_DIR = BASE_DIR / "site"
 TODAY_PROBABILITY_CSV = OUTPUT_DIR / "today_probabilities.csv"
+STANDINGS_CSV = OUTPUT_DIR / "standings.csv"
 
 TEAM_COLORS = {
     "阪神": "#f7d417",
@@ -169,6 +170,68 @@ def today_probabilities_html(df: pd.DataFrame) -> str:
         f'<div class="schedule-date">対象日: {html.escape(date)}</div>'
         f'<div class="schedule-grid">{"".join(cards)}</div>'
     )
+
+
+def format_win_pct(value) -> str:
+    if pd.isna(value):
+        return ""
+    try:
+        return f"{float(value):.3f}".lstrip("0")
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def standings_html(df: pd.DataFrame) -> str:
+    if df.empty:
+        return '<div class="empty">順位表データがありません</div>'
+
+    tables = []
+    for league_key, league_label in [("central", "セ・リーグ"), ("pacific", "パ・リーグ")]:
+        league_df = df[df["league"] == league_key].sort_values("rank")
+        if league_df.empty:
+            continue
+
+        source_date = str(league_df.iloc[0].get("source_date", "-"))
+        rows = []
+        for _, row in league_df.iterrows():
+            team = str(row["team"])
+            color = TEAM_COLORS.get(team, "#38bdf8")
+            rows.append(
+                "<tr>"
+                f"<td>{int(row['rank'])}</td>"
+                f'<td class="standings-team"><span class="team-dot" style="background:{html.escape(color)}"></span>{html.escape(team)}</td>'
+                f"<td>{int(row['games'])}</td>"
+                f"<td>{int(row['wins'])}</td>"
+                f"<td>{int(row['losses'])}</td>"
+                f"<td>{int(row['draws'])}</td>"
+                f"<td>{html.escape(format_win_pct(row['win_pct']))}</td>"
+                f"<td>{html.escape(str(row['games_behind']))}</td>"
+                "</tr>"
+            )
+
+        tables.append(
+            f"""
+            <section class="standings-table">
+              <div class="standings-title">
+                <span>{html.escape(league_label)}</span>
+                <span>{html.escape(source_date)} 現在</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>順位</th><th>球団</th><th>試合</th><th>勝</th><th>敗</th><th>分</th><th>勝率</th><th>差</th></tr>
+                  </thead>
+                  <tbody>{''.join(rows)}</tbody>
+                </table>
+              </div>
+            </section>
+            """
+        )
+
+    if not tables:
+        return '<div class="empty">順位表データがありません</div>'
+
+    return f'<div class="standings-grid">{"".join(tables)}</div>'
 
 
 def team_page_path(league_key: str, team: str) -> Path:
@@ -572,6 +635,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
     colors_json = json.dumps(TEAM_COLORS, ensure_ascii=False)
     first = payload[0]
     today_html = today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV))
+    standings_table_html = standings_html(read_csv(STANDINGS_CSV))
     tabs = "".join(
         f'<button class="tab{" is-active" if item["key"] == first["key"] else ""}" data-key="{item["key"]}">{html.escape(item["label"])}</button>'
         for item in payload
@@ -815,6 +879,45 @@ def build_html(payload: list[dict[str, str]]) -> str:
       font-size: 11px;
       margin-top: 8px;
     }}
+    .standings-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }}
+    .standings-table {{
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1018;
+    }}
+    .standings-title {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 12px;
+      background: #111827;
+      border-bottom: 1px solid var(--line);
+      color: #f8fafc;
+      font-weight: 800;
+      font-size: 13px;
+    }}
+    .standings-title span:last-child {{
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+    }}
+    .standings-team {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      font-weight: 800;
+      color: #f8fafc;
+    }}
     .graph-wrap {{
       padding: 12px;
     }}
@@ -958,6 +1061,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .schedule-grid {{
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }}
+      .standings-grid {{
+        grid-template-columns: 1fr;
+      }}
     }}
     @media (max-width: 560px) {{
       main, .header-inner {{
@@ -1016,6 +1122,16 @@ def build_html(payload: list[dict[str, str]]) -> str:
         </div>
       </div>
       {today_html}
+    </section>
+
+    <section class="panel" style="margin-bottom: 16px;">
+      <div class="panel-header">
+        <div class="panel-title">順位表</div>
+        <div class="links">
+          <a href="../output/standings.csv">CSV</a>
+        </div>
+      </div>
+      {standings_table_html}
     </section>
 
     <section class="layout">

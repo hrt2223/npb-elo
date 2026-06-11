@@ -236,6 +236,45 @@
       font-size: 11px;
       margin-top: 8px;
     }
+    .standings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+    .standings-table {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1018;
+    }
+    .standings-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 12px;
+      background: #111827;
+      border-bottom: 1px solid var(--line);
+      color: #f8fafc;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .standings-title span:last-child {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .standings-team {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      font-weight: 800;
+      color: #f8fafc;
+    }
     .graph-wrap {
       padding: 12px;
     }
@@ -378,6 +417,9 @@
       }
       .schedule-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .standings-grid {
+        grid-template-columns: 1fr;
       }
     }
     @media (max-width: 560px) {
@@ -580,6 +622,46 @@
                 <span>Elo 1440.7</span>
               </div>
             </article>
+            </div>
+    </section>
+
+    <section class="panel" style="margin-bottom: 16px;">
+      <div class="panel-header">
+        <div class="panel-title">順位表</div>
+        <div class="links">
+          <a href="../output/standings.csv">CSV</a>
+        </div>
+      </div>
+      <div class="standings-grid">
+            <section class="standings-table">
+              <div class="standings-title">
+                <span>セ・リーグ</span>
+                <span>2026-06-10 現在</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>順位</th><th>球団</th><th>試合</th><th>勝</th><th>敗</th><th>分</th><th>勝率</th><th>差</th></tr>
+                  </thead>
+                  <tbody><tr><td>1</td><td class="standings-team"><span class="team-dot" style="background:#f47b20"></span>巨人</td><td>60</td><td>33</td><td>25</td><td>2</td><td>.569</td><td>--</td></tr><tr><td>2</td><td class="standings-team"><span class="team-dot" style="background:#f7d417"></span>阪神</td><td>58</td><td>32</td><td>25</td><td>1</td><td>.561</td><td>0.5</td></tr><tr><td>3</td><td class="standings-team"><span class="team-dot" style="background:#1f9d55"></span>ヤクルト</td><td>60</td><td>32</td><td>27</td><td>1</td><td>.542</td><td>1.5</td></tr><tr><td>4</td><td class="standings-team"><span class="team-dot" style="background:#00a9e0"></span>DeNA</td><td>60</td><td>25</td><td>33</td><td>2</td><td>.431</td><td>8.0</td></tr><tr><td>5</td><td class="standings-team"><span class="team-dot" style="background:#d71920"></span>広島</td><td>57</td><td>21</td><td>33</td><td>3</td><td>.389</td><td>10.0</td></tr><tr><td>6</td><td class="standings-team"><span class="team-dot" style="background:#003f7f"></span>中日</td><td>60</td><td>21</td><td>38</td><td>1</td><td>.356</td><td>12.5</td></tr></tbody>
+                </table>
+              </div>
+            </section>
+            
+            <section class="standings-table">
+              <div class="standings-title">
+                <span>パ・リーグ</span>
+                <span>2026-06-10 現在</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>順位</th><th>球団</th><th>試合</th><th>勝</th><th>敗</th><th>分</th><th>勝率</th><th>差</th></tr>
+                  </thead>
+                  <tbody><tr><td>1</td><td class="standings-team"><span class="team-dot" style="background:#7a1632"></span>西武</td><td>61</td><td>37</td><td>22</td><td>2</td><td>.627</td><td>--</td></tr><tr><td>2</td><td class="standings-team"><span class="team-dot" style="background:#f4c400"></span>ソフトバンク</td><td>59</td><td>35</td><td>24</td><td>0</td><td>.593</td><td>2.0</td></tr><tr><td>3</td><td class="standings-team"><span class="team-dot" style="background:#8b5a2b"></span>オリックス</td><td>60</td><td>32</td><td>27</td><td>1</td><td>.542</td><td>5.0</td></tr><tr><td>4</td><td class="standings-team"><span class="team-dot" style="background:#0f5fa8"></span>日本ハム</td><td>62</td><td>33</td><td>29</td><td>0</td><td>.532</td><td>5.5</td></tr><tr><td>5</td><td class="standings-team"><span class="team-dot" style="background:#111827"></span>ロッテ</td><td>60</td><td>28</td><td>30</td><td>2</td><td>.483</td><td>8.5</td></tr><tr><td>6</td><td class="standings-team"><span class="team-dot" style="background:#8c1d40"></span>楽天</td><td>59</td><td>21</td><td>37</td><td>1</td><td>.362</td><td>15.5</td></tr></tbody>
+                </table>
+              </div>
+            </section>
             </div>
     </section>
 
