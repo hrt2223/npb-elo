@@ -59,6 +59,8 @@ GitHub Pagesで表示される静的サイトです。
 | path | role |
 | --- | --- |
 | `npb/2026/site/index.html` | トップページ。グラフ、表、今日の試合、順位表を表示 |
+| `npb/2026/site/central/index.html` | セ・リーグ順位表ページ |
+| `npb/2026/site/pacific/index.html` | パ・リーグ順位表ページ |
 | `npb/2026/site/central/` | セ・リーグ各球団ページ |
 | `npb/2026/site/pacific/` | パ・リーグ各球団ページ |
 
