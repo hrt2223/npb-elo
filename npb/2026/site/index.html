@@ -218,6 +218,7 @@
       text-align: right;
     }
     .probability-bar {
+      display: flex;
       height: 9px;
       border-radius: 999px;
       background: #1f2937;
@@ -227,7 +228,13 @@
     .probability-bar span {
       display: block;
       height: 100%;
-      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .probability-bar .home-prob {
+      border-radius: 999px 0 0 999px;
+    }
+    .probability-bar .away-prob {
+      border-radius: 0 999px 999px 0;
     }
     .elo-row {
       display: flex;
@@ -532,8 +539,9 @@
               <div class="schedule-venue">18:00 / 京セラD大阪</div>
               <div class="probability-row">
                 <span>58.2%</span>
-                <div class="probability-bar" aria-label="オリックス 勝率 58.2%">
-                  <span style="width:58.2%; background:#8b5a2b"></span>
+                <div class="probability-bar" aria-label="オリックス 勝率 58.2% / ヤクルト 勝率 41.8%">
+                  <span class="home-prob" style="width:58.2%; background:#8b5a2b"></span>
+                  <span class="away-prob" style="width:41.8%; background:#1f9d55"></span>
                 </div>
                 <span>41.8%</span>
               </div>
@@ -556,8 +564,9 @@
               <div class="schedule-venue">18:00 / みずほPayPay</div>
               <div class="probability-row">
                 <span>64.9%</span>
-                <div class="probability-bar" aria-label="ソフトバンク 勝率 64.9%">
-                  <span style="width:64.9%; background:#f4c400"></span>
+                <div class="probability-bar" aria-label="ソフトバンク 勝率 64.9% / 阪神 勝率 35.1%">
+                  <span class="home-prob" style="width:64.9%; background:#f4c400"></span>
+                  <span class="away-prob" style="width:35.1%; background:#f7d417"></span>
                 </div>
                 <span>35.1%</span>
               </div>
@@ -580,8 +589,9 @@
               <div class="schedule-venue">18:00 / ZOZOマリン</div>
               <div class="probability-row">
                 <span>67.7%</span>
-                <div class="probability-bar" aria-label="ロッテ 勝率 67.7%">
-                  <span style="width:67.7%; background:#111827"></span>
+                <div class="probability-bar" aria-label="ロッテ 勝率 67.7% / 中日 勝率 32.3%">
+                  <span class="home-prob" style="width:67.7%; background:#111827"></span>
+                  <span class="away-prob" style="width:32.3%; background:#003f7f"></span>
                 </div>
                 <span>32.3%</span>
               </div>
@@ -604,8 +614,9 @@
               <div class="schedule-venue">18:00 / エスコンＦ</div>
               <div class="probability-row">
                 <span>71.7%</span>
-                <div class="probability-bar" aria-label="日本ハム 勝率 71.7%">
-                  <span style="width:71.7%; background:#0f5fa8"></span>
+                <div class="probability-bar" aria-label="日本ハム 勝率 71.7% / DeNA 勝率 28.3%">
+                  <span class="home-prob" style="width:71.7%; background:#0f5fa8"></span>
+                  <span class="away-prob" style="width:28.3%; background:#00a9e0"></span>
                 </div>
                 <span>28.3%</span>
               </div>
@@ -628,8 +639,9 @@
               <div class="schedule-venue">18:00 / 楽天モバイル</div>
               <div class="probability-row">
                 <span>28.4%</span>
-                <div class="probability-bar" aria-label="楽天 勝率 28.4%">
-                  <span style="width:28.4%; background:#8c1d40"></span>
+                <div class="probability-bar" aria-label="楽天 勝率 28.4% / 巨人 勝率 71.6%">
+                  <span class="home-prob" style="width:28.4%; background:#8c1d40"></span>
+                  <span class="away-prob" style="width:71.6%; background:#f47b20"></span>
                 </div>
                 <span>71.6%</span>
               </div>
@@ -652,8 +664,9 @@
               <div class="schedule-venue">18:00 / ベルーナドーム</div>
               <div class="probability-row">
                 <span>77.5%</span>
-                <div class="probability-bar" aria-label="西武 勝率 77.5%">
-                  <span style="width:77.5%; background:#7a1632"></span>
+                <div class="probability-bar" aria-label="西武 勝率 77.5% / 広島 勝率 22.5%">
+                  <span class="home-prob" style="width:77.5%; background:#7a1632"></span>
+                  <span class="away-prob" style="width:22.5%; background:#d71920"></span>
                 </div>
                 <span>22.5%</span>
               </div>

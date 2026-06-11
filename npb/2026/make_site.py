@@ -158,8 +158,9 @@ def today_probabilities_html(df: pd.DataFrame) -> str:
               <div class="schedule-venue">{html.escape(venue)}</div>
               <div class="probability-row">
                 <span>{home_prob:.1f}%</span>
-                <div class="probability-bar" aria-label="{html.escape(home)} 勝率 {home_prob:.1f}%">
-                  <span style="width:{home_prob:.1f}%; background:{html.escape(home_color)}"></span>
+                <div class="probability-bar" aria-label="{html.escape(home)} 勝率 {home_prob:.1f}% / {html.escape(away)} 勝率 {away_prob:.1f}%">
+                  <span class="home-prob" style="width:{home_prob:.1f}%; background:{html.escape(home_color)}"></span>
+                  <span class="away-prob" style="width:{away_prob:.1f}%; background:{html.escape(away_color)}"></span>
                 </div>
                 <span>{away_prob:.1f}%</span>
               </div>
@@ -870,6 +871,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       text-align: right;
     }}
     .probability-bar {{
+      display: flex;
       height: 9px;
       border-radius: 999px;
       background: #1f2937;
@@ -879,7 +881,13 @@ def build_html(payload: list[dict[str, str]]) -> str:
     .probability-bar span {{
       display: block;
       height: 100%;
-      border-radius: 999px;
+      flex: 0 0 auto;
+    }}
+    .probability-bar .home-prob {{
+      border-radius: 999px 0 0 999px;
+    }}
+    .probability-bar .away-prob {{
+      border-radius: 0 999px 999px 0;
     }}
     .elo-row {{
       display: flex;
