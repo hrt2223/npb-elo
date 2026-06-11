@@ -1133,22 +1133,22 @@ def build_html(payload: list[dict[str, str]]) -> str:
 
     <section class="panel" style="margin-bottom: 16px;">
       <div class="panel-header">
-        <div class="panel-title">順位表</div>
-        <div class="links">
-          <a href="../output/standings.csv">CSV</a>
-        </div>
-      </div>
-      <div id="standingsContent">{first["standingsHtml"]}</div>
-    </section>
-
-    <section class="panel" style="margin-bottom: 16px;">
-      <div class="panel-header">
         <div class="panel-title">今日の対戦予定と勝率</div>
         <div class="links">
           <a href="../output/today_probabilities.csv">CSV</a>
         </div>
       </div>
       {today_html}
+    </section>
+
+    <section class="panel" style="margin-bottom: 16px;">
+      <div class="panel-header">
+        <div class="panel-title">順位表</div>
+        <div class="links">
+          <a href="../output/standings.csv">CSV</a>
+        </div>
+      </div>
+      <div id="standingsContent">{first["standingsHtml"]}</div>
     </section>
 
     <section class="layout">
