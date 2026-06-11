@@ -2,6 +2,8 @@ name: NPB 2026 Elo Daily Update
 
 on:
   schedule:
+    # 00:00 UTC = 09:00 JST. Updates today's schedule and win probabilities.
+    - cron: "0 0 * * *"
     # 14:55 UTC = 23:55 JST. This avoids depending on the local PC.
     - cron: "55 14 * * *"
   workflow_dispatch:
@@ -40,6 +42,7 @@ jobs:
           python update_daily.py
           python make_elo_tables.py
           python make_elo_graphs.py
+          python update_today_probabilities.py
           python make_site.py
 
       - name: Commit updated results

@@ -17,6 +17,7 @@ try {
     python .\update_daily.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_elo_tables.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_elo_graphs.py 2>&1 | Tee-Object -FilePath $RunLog -Append
+    python .\update_today_probabilities.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_site.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     $finished = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     Add-Content -Path $RunLog -Value "Finished at: $finished"

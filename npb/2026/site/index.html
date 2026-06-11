@@ -150,6 +150,92 @@
       font-weight: 600;
     }
     a:hover { text-decoration: underline; }
+    .schedule-date {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 12px 16px 0;
+    }
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+    .schedule-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #0d131d 0%, #090d14 100%);
+      padding: 13px;
+      min-width: 0;
+    }
+    .schedule-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 11px;
+    }
+    .schedule-teams {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .team-name {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .team-name.is-away {
+      justify-content: flex-end;
+    }
+    .versus {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .schedule-venue {
+      color: #cbd5e1;
+      font-size: 12px;
+      min-height: 18px;
+      margin-bottom: 12px;
+    }
+    .probability-row {
+      display: grid;
+      grid-template-columns: 44px minmax(96px, 1fr) 44px;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #e5edf7;
+    }
+    .probability-row span:last-child {
+      text-align: right;
+    }
+    .probability-bar {
+      height: 9px;
+      border-radius: 999px;
+      background: #1f2937;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+    .probability-bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+    }
+    .elo-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 8px;
+    }
     .graph-wrap {
       padding: 12px;
     }
@@ -290,6 +376,9 @@
       .layout {
         grid-template-columns: 1fr;
       }
+      .schedule-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
     @media (max-width: 560px) {
       main, .header-inner {
@@ -302,6 +391,9 @@
       h1 { font-size: 21px; }
       .chart {
         min-height: 300px;
+      }
+      .schedule-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -335,6 +427,160 @@
         <div class="metric-label">対象期間</div>
         <div class="metric-value" id="metricPeriod">2026-03-27 - 2026-06-10</div>
       </div>
+    </section>
+
+    <section class="panel" style="margin-bottom: 16px;">
+      <div class="panel-header">
+        <div class="panel-title">今日の対戦予定と勝率</div>
+        <div class="links">
+          <a href="../output/today_probabilities.csv">CSV</a>
+        </div>
+      </div>
+      <div class="schedule-date">対象日: 2026-06-11</div><div class="schedule-grid">
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#8b5a2b"></span>オリックス</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#1f9d55"></span>ヤクルト</div>
+              </div>
+              <div class="schedule-venue">18:00 / 京セラD大阪</div>
+              <div class="probability-row">
+                <span>58.2%</span>
+                <div class="probability-bar" aria-label="オリックス 勝率 58.2%">
+                  <span style="width:58.2%; background:#8b5a2b"></span>
+                </div>
+                <span>41.8%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1490.8</span>
+                <span>Elo 1468.2</span>
+              </div>
+            </article>
+            
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#f4c400"></span>ソフトバンク</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#f7d417"></span>阪神</div>
+              </div>
+              <div class="schedule-venue">18:00 / みずほPayPay</div>
+              <div class="probability-row">
+                <span>64.9%</span>
+                <div class="probability-bar" aria-label="ソフトバンク 勝率 64.9%">
+                  <span style="width:64.9%; background:#f4c400"></span>
+                </div>
+                <span>35.1%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1584.3</span>
+                <span>Elo 1512.8</span>
+              </div>
+            </article>
+            
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#111827"></span>ロッテ</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#003f7f"></span>中日</div>
+              </div>
+              <div class="schedule-venue">18:00 / ZOZOマリン</div>
+              <div class="probability-row">
+                <span>67.7%</span>
+                <div class="probability-bar" aria-label="ロッテ 勝率 67.7%">
+                  <span style="width:67.7%; background:#111827"></span>
+                </div>
+                <span>32.3%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1523.3</span>
+                <span>Elo 1430.1</span>
+              </div>
+            </article>
+            
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#0f5fa8"></span>日本ハム</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#00a9e0"></span>DeNA</div>
+              </div>
+              <div class="schedule-venue">18:00 / エスコンＦ</div>
+              <div class="probability-row">
+                <span>71.7%</span>
+                <div class="probability-bar" aria-label="日本ハム 勝率 71.7%">
+                  <span style="width:71.7%; background:#0f5fa8"></span>
+                </div>
+                <span>28.3%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1564.9</span>
+                <span>Elo 1438.5</span>
+              </div>
+            </article>
+            
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#8c1d40"></span>楽天</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#f47b20"></span>巨人</div>
+              </div>
+              <div class="schedule-venue">18:00 / 楽天モバイル</div>
+              <div class="probability-row">
+                <span>28.4%</span>
+                <div class="probability-bar" aria-label="楽天 勝率 28.4%">
+                  <span style="width:28.4%; background:#8c1d40"></span>
+                </div>
+                <span>71.6%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1365.1</span>
+                <span>Elo 1560.4</span>
+              </div>
+            </article>
+            
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>交流戦</span>
+                <span>予定</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:#7a1632"></span>西武</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:#d71920"></span>広島</div>
+              </div>
+              <div class="schedule-venue">18:00 / ベルーナドーム</div>
+              <div class="probability-row">
+                <span>77.5%</span>
+                <div class="probability-bar" aria-label="西武 勝率 77.5%">
+                  <span style="width:77.5%; background:#7a1632"></span>
+                </div>
+                <span>22.5%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo 1620.9</span>
+                <span>Elo 1440.7</span>
+              </div>
+            </article>
+            </div>
     </section>
 
     <section class="layout">

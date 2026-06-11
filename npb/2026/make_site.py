@@ -10,6 +10,7 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 SITE_DIR = BASE_DIR / "site"
+TODAY_PROBABILITY_CSV = OUTPUT_DIR / "today_probabilities.csv"
 
 TEAM_COLORS = {
     "阪神": "#f7d417",
@@ -114,6 +115,60 @@ def df_to_table(df: pd.DataFrame, *, max_rows: int | None = None) -> str:
         rows.append(f"<tr>{cells}</tr>")
 
     return f"<table><thead><tr>{header}</tr></thead><tbody>{''.join(rows)}</tbody></table>"
+
+
+def today_probabilities_html(df: pd.DataFrame) -> str:
+    if df.empty:
+        return '<div class="empty">今日の対戦予定はありません</div>'
+
+    date = str(df.iloc[0].get("date", "-"))
+    cards = []
+    for _, row in df.iterrows():
+        home = str(row["home"])
+        away = str(row["away"])
+        home_color = TEAM_COLORS.get(home, "#38bdf8")
+        away_color = TEAM_COLORS.get(away, "#94a3b8")
+        home_prob = float(row["home_win_probability"])
+        away_prob = float(row["away_win_probability"])
+        status = str(row.get("status", "予定"))
+        venue = " / ".join(
+            value
+            for value in [str(row.get("start_time", "")).strip(), str(row.get("stadium", "")).strip()]
+            if value
+        )
+
+        cards.append(
+            f"""
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>{html.escape(str(row.get("game_type", "")))}</span>
+                <span>{html.escape(status)}</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:{html.escape(home_color)}"></span>{html.escape(home)}</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:{html.escape(away_color)}"></span>{html.escape(away)}</div>
+              </div>
+              <div class="schedule-venue">{html.escape(venue)}</div>
+              <div class="probability-row">
+                <span>{home_prob:.1f}%</span>
+                <div class="probability-bar" aria-label="{html.escape(home)} 勝率 {home_prob:.1f}%">
+                  <span style="width:{home_prob:.1f}%; background:{html.escape(home_color)}"></span>
+                </div>
+                <span>{away_prob:.1f}%</span>
+              </div>
+              <div class="elo-row">
+                <span>Elo {float(row["home_elo"]):.1f}</span>
+                <span>Elo {float(row["away_elo"]):.1f}</span>
+              </div>
+            </article>
+            """
+        )
+
+    return (
+        f'<div class="schedule-date">対象日: {html.escape(date)}</div>'
+        f'<div class="schedule-grid">{"".join(cards)}</div>'
+    )
 
 
 def team_page_path(league_key: str, team: str) -> Path:
@@ -516,6 +571,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
     data_json = json.dumps(payload, ensure_ascii=False)
     colors_json = json.dumps(TEAM_COLORS, ensure_ascii=False)
     first = payload[0]
+    today_html = today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV))
     tabs = "".join(
         f'<button class="tab{" is-active" if item["key"] == first["key"] else ""}" data-key="{item["key"]}">{html.escape(item["label"])}</button>'
         for item in payload
@@ -673,6 +729,92 @@ def build_html(payload: list[dict[str, str]]) -> str:
       font-weight: 600;
     }}
     a:hover {{ text-decoration: underline; }}
+    .schedule-date {{
+      color: var(--muted);
+      font-size: 13px;
+      padding: 12px 16px 0;
+    }}
+    .schedule-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }}
+    .schedule-card {{
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #0d131d 0%, #090d14 100%);
+      padding: 13px;
+      min-width: 0;
+    }}
+    .schedule-meta {{
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 11px;
+    }}
+    .schedule-teams {{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }}
+    .team-name {{
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      font-weight: 800;
+      color: #f8fafc;
+    }}
+    .team-name.is-away {{
+      justify-content: flex-end;
+    }}
+    .versus {{
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }}
+    .schedule-venue {{
+      color: #cbd5e1;
+      font-size: 12px;
+      min-height: 18px;
+      margin-bottom: 12px;
+    }}
+    .probability-row {{
+      display: grid;
+      grid-template-columns: 44px minmax(96px, 1fr) 44px;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #e5edf7;
+    }}
+    .probability-row span:last-child {{
+      text-align: right;
+    }}
+    .probability-bar {{
+      height: 9px;
+      border-radius: 999px;
+      background: #1f2937;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }}
+    .probability-bar span {{
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+    }}
+    .elo-row {{
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 8px;
+    }}
     .graph-wrap {{
       padding: 12px;
     }}
@@ -813,6 +955,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .layout {{
         grid-template-columns: 1fr;
       }}
+      .schedule-grid {{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }}
     }}
     @media (max-width: 560px) {{
       main, .header-inner {{
@@ -825,6 +970,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       h1 {{ font-size: 21px; }}
       .chart {{
         min-height: 300px;
+      }}
+      .schedule-grid {{
+        grid-template-columns: 1fr;
       }}
     }}
   </style>
@@ -858,6 +1006,16 @@ def build_html(payload: list[dict[str, str]]) -> str:
         <div class="metric-label">対象期間</div>
         <div class="metric-value" id="metricPeriod">{html.escape(first["period"])}</div>
       </div>
+    </section>
+
+    <section class="panel" style="margin-bottom: 16px;">
+      <div class="panel-header">
+        <div class="panel-title">今日の対戦予定と勝率</div>
+        <div class="links">
+          <a href="../output/today_probabilities.csv">CSV</a>
+        </div>
+      </div>
+      {today_html}
     </section>
 
     <section class="layout">
