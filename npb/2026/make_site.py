@@ -231,30 +231,17 @@ def standings_table_html(df: pd.DataFrame, *, league_key: str) -> str:
     """
 
 
-def standings_links_html(df: pd.DataFrame) -> str:
+def standings_for_section_html(df: pd.DataFrame, *, section_key: str) -> str:
     if df.empty:
         return '<div class="empty">順位表データがありません</div>'
 
-    cards = []
-    for league_key in ["central", "pacific"]:
-        league_df = df[df["league"] == league_key].sort_values("rank")
-        if league_df.empty:
-            continue
-        leader = str(league_df.iloc[0]["team"])
-        source_date = str(league_df.iloc[0].get("source_date", "-"))
-        cards.append(
-            f"""
-            <a class="standings-link" href="{league_key}/index.html">
-              <span class="standings-link-title">{html.escape(LEAGUE_LABELS[league_key])} 順位表</span>
-              <span class="standings-link-meta">1位 {html.escape(leader)} / {html.escape(source_date)} 現在</span>
-            </a>
-            """
-        )
+    league_keys = [section_key] if section_key in LEAGUE_LABELS else ["central", "pacific"]
+    tables = [standings_table_html(df, league_key=league_key) for league_key in league_keys]
 
-    if not cards:
+    if not tables:
         return '<div class="empty">順位表データがありません</div>'
 
-    return f'<div class="standings-links">{"".join(cards)}</div>'
+    return f'<div class="standings-grid">{"".join(tables)}</div>'
 
 
 def team_page_path(league_key: str, team: str) -> Path:
@@ -275,22 +262,6 @@ def build_team_links_html(league_key: str) -> str:
         color = TEAM_COLORS.get(team, "#38bdf8")
         links.append(
             f'<a class="team-link" href="{html.escape(team_page_href(league_key, team))}">'
-            f'<span class="team-dot" style="background:{html.escape(color)}"></span>'
-            f"{html.escape(team)}</a>"
-        )
-    return '<div class="team-links">' + "".join(links) + "</div>"
-
-
-def build_league_team_links_html(league_key: str) -> str:
-    teams = LEAGUE_TEAMS.get(league_key, [])
-    if not teams:
-        return ""
-
-    links = []
-    for team in teams:
-        color = TEAM_COLORS.get(team, "#38bdf8")
-        links.append(
-            f'<a class="team-link" href="{html.escape(TEAM_SLUGS[team])}.html">'
             f'<span class="team-dot" style="background:{html.escape(color)}"></span>'
             f"{html.escape(team)}</a>"
         )
@@ -453,6 +424,7 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "latestDate": latest_date,
         "chartData": chart_df.to_dict(orient="records") if not chart_df.empty else [],
         "teamLinksHtml": build_team_links_html(str(section["key"])),
+        "standingsHtml": standings_for_section_html(read_csv(STANDINGS_CSV), section_key=str(section["key"])),
     }
 
 
@@ -657,208 +629,6 @@ def build_team_page_html(*, league_key: str, league_label: str, team: str) -> st
 """
 
 
-def build_standings_page_html(*, league_key: str) -> str:
-    league_label = LEAGUE_LABELS[league_key]
-    standings = standings_table_html(read_csv(STANDINGS_CSV), league_key=league_key)
-    team_links = build_league_team_links_html(league_key)
-
-    return f"""<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{html.escape(league_label)} 順位表 - 2026 NPB Elo</title>
-  <style>
-    :root {{
-      --bg: #07090d;
-      --surface: #10141d;
-      --ink: #edf2f7;
-      --muted: #9aa4b2;
-      --line: #252d3a;
-      --accent: #38bdf8;
-    }}
-    * {{ box-sizing: border-box; }}
-    body {{
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Yu Gothic", "Meiryo", system-ui, sans-serif;
-      background:
-        radial-gradient(circle at 50% -18%, rgba(56, 189, 248, 0.14), transparent 35%),
-        linear-gradient(180deg, #0b111a 0%, var(--bg) 42%, #050608 100%);
-      color: var(--ink);
-    }}
-    main {{
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 28px 22px 40px;
-    }}
-    a {{
-      color: #7dd3fc;
-      text-decoration: none;
-      font-weight: 700;
-    }}
-    a:hover {{ text-decoration: underline; }}
-    .back {{
-      display: inline-flex;
-      margin-bottom: 18px;
-      color: var(--muted);
-      font-size: 14px;
-    }}
-    .hero {{
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(21, 27, 38, 0.96), rgba(10, 14, 21, 0.96));
-      padding: 22px;
-      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-      margin-bottom: 16px;
-    }}
-    h1 {{
-      margin: 0;
-      font-size: 32px;
-      line-height: 1.15;
-      letter-spacing: 0;
-    }}
-    .panel {{
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: rgba(16, 20, 29, 0.94);
-      overflow: hidden;
-      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.035);
-      margin-bottom: 16px;
-    }}
-    .panel-header {{
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(21, 27, 38, 0.72);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-weight: 800;
-    }}
-    .table-wrap {{ overflow-x: auto; }}
-    table {{
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      white-space: nowrap;
-      color: #dbe3ee;
-    }}
-    th, td {{
-      padding: 10px 11px;
-      border-bottom: 1px solid #202733;
-      text-align: right;
-    }}
-    th {{
-      background: #151b26;
-      color: #cbd5e1;
-      font-weight: 800;
-    }}
-    th:first-child, td:first-child,
-    th:nth-child(2), td:nth-child(2) {{
-      text-align: left;
-    }}
-    tbody tr:hover {{
-      background: rgba(56, 189, 248, 0.06);
-    }}
-    .standings-title {{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 11px 12px;
-      background: #111827;
-      border-bottom: 1px solid var(--line);
-      color: #f8fafc;
-      font-weight: 800;
-      font-size: 13px;
-    }}
-    .standings-title span:last-child {{
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 12px;
-      white-space: nowrap;
-    }}
-    .standings-team {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-align: left;
-      font-weight: 800;
-      color: #f8fafc;
-    }}
-    .team-dot {{
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      box-shadow: 0 0 18px currentColor;
-      flex: 0 0 auto;
-    }}
-    .team-links {{
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      padding: 12px;
-    }}
-    .team-link {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      background: #0b1018;
-      color: #edf2f7;
-    }}
-    .team-link:hover {{
-      border-color: rgba(125, 211, 252, 0.45);
-      background: #111827;
-      text-decoration: none;
-    }}
-    .empty {{ padding: 24px; color: var(--muted); }}
-    @media (max-width: 760px) {{
-      .team-links {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
-      h1 {{ font-size: 28px; }}
-    }}
-    @media (max-width: 520px) {{
-      main {{ padding: 20px 14px 32px; }}
-      .team-links {{ grid-template-columns: 1fr; }}
-    }}
-  </style>
-</head>
-<body>
-  <main>
-    <a class="back" href="../index.html">← ダッシュボードへ戻る</a>
-    <section class="hero">
-      <h1>{html.escape(league_label)} 順位表</h1>
-    </section>
-
-    <section class="panel">
-      <div class="panel-header">
-        <span>順位表</span>
-        <a href="../../output/standings.csv">CSV</a>
-      </div>
-      {standings}
-    </section>
-
-    <section class="panel">
-      <div class="panel-header">球団ページ</div>
-      {team_links}
-    </section>
-  </main>
-</body>
-</html>
-"""
-
-
-def write_standings_pages() -> None:
-    for league_key in LEAGUE_LABELS:
-        path = SITE_DIR / league_key / "index.html"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(build_standings_page_html(league_key=league_key), encoding="utf-8")
-
-
 def write_team_pages() -> None:
     for league_key, teams in LEAGUE_TEAMS.items():
         for team in teams:
@@ -875,7 +645,6 @@ def build_html(payload: list[dict[str, str]]) -> str:
     colors_json = json.dumps(TEAM_COLORS, ensure_ascii=False)
     first = payload[0]
     today_html = today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV))
-    standings_navigation_html = standings_links_html(read_csv(STANDINGS_CSV))
     tabs = "".join(
         f'<button class="tab{" is-active" if item["key"] == first["key"] else ""}" data-key="{item["key"]}">{html.escape(item["label"])}</button>'
         for item in payload
@@ -1125,37 +894,6 @@ def build_html(payload: list[dict[str, str]]) -> str:
       gap: 12px;
       padding: 12px;
     }}
-    .standings-links {{
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      padding: 12px;
-    }}
-    .standings-link {{
-      display: grid;
-      gap: 6px;
-      min-height: 76px;
-      padding: 14px 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: linear-gradient(180deg, #0d131d 0%, #090d14 100%);
-      color: #edf2f7;
-    }}
-    .standings-link:hover {{
-      border-color: rgba(125, 211, 252, 0.45);
-      background: #111827;
-      text-decoration: none;
-    }}
-    .standings-link-title {{
-      font-size: 16px;
-      font-weight: 800;
-      color: #f8fafc;
-    }}
-    .standings-link-meta {{
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-    }}
     .standings-table {{
       min-width: 0;
       border: 1px solid var(--line);
@@ -1335,9 +1073,6 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .standings-grid {{
         grid-template-columns: 1fr;
       }}
-      .standings-links {{
-        grid-template-columns: 1fr;
-      }}
     }}
     @media (max-width: 560px) {{
       main, .header-inner {{
@@ -1405,7 +1140,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
           <a href="../output/standings.csv">CSV</a>
         </div>
       </div>
-      {standings_navigation_html}
+      <div id="standingsContent">{first["standingsHtml"]}</div>
     </section>
 
     <section class="layout">
@@ -1629,6 +1364,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       document.getElementById("tableLink").href = item.tableLink;
       document.getElementById("latestLink").href = item.latestLink;
       document.getElementById("rankingTable").innerHTML = item.rankingHtml;
+      document.getElementById("standingsContent").innerHTML = item.standingsHtml;
       document.getElementById("historyTable").innerHTML = item.tableHtml;
       document.getElementById("teamLinks").innerHTML = item.teamLinksHtml || "";
       document.getElementById("teamLinksPanel").style.display = item.teamLinksHtml ? "" : "none";
@@ -1652,8 +1388,6 @@ def main() -> None:
     index_path = SITE_DIR / "index.html"
     index_path.write_text(build_html(payload), encoding="utf-8")
     print(f"Saved: {index_path}")
-    write_standings_pages()
-    print("Saved standings pages")
     write_team_pages()
     print("Saved team pages")
 
