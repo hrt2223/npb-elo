@@ -25,3 +25,15 @@ python make_site.py
 ```
 
 `daily_update.ps1` runs the same update flow locally. The GitHub Actions workflow is the main automation, so updates can run even when this PC is off.
+
+## Elo Parameters
+
+Edit `npb/2026/elo_settings.py` to change the calculation parameters used by both Elo updates and win-probability predictions.
+
+- `K_FACTOR`: rating movement per game
+- `LOGISTIC_BASE`: base of the expected-score function
+- `LOGISTIC_SCALE`: rating-difference scale of the expected-score function
+- `INITIAL_RATING`: starting rating for each team
+- `HOME_ADVANTAGE`: home-team rating adjustment
+
+After changing a value, rerun the daily update flow to rebuild the CSV files, graphs, probabilities, and site.

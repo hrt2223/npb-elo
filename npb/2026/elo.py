@@ -6,10 +6,13 @@ from pathlib import Path
 
 import pandas as pd
 
-
-INITIAL_RATING = 1500.0 #初期値
-K_FACTOR = 24.0 #k値
-HOME_ADVANTAGE = 35.0 #ホームアドバンテージ
+from elo_settings import (
+    HOME_ADVANTAGE,
+    INITIAL_RATING,
+    K_FACTOR,
+    LOGISTIC_BASE,
+    LOGISTIC_SCALE,
+)
 
 
 TEAM_SHORT_NAMES = {
@@ -39,9 +42,19 @@ class Game:
 
 
 #eloレーティングの予想勝率を計算する式
-def expected_score(rating_a: float, rating_b: float) -> float:
+def expected_score(
+    rating_a: float,
+    rating_b: float,
+    *,
+    logistic_base: float = LOGISTIC_BASE,
+    logistic_scale: float = LOGISTIC_SCALE,
+) -> float:
     """Return player/team A's expected score against B."""
-    return 1.0 / (1.0 + 10.0 ** ((rating_b - rating_a) / 400.0))#めっちゃ大事な式
+    if logistic_base <= 1.0:
+        raise ValueError("logistic_base must be greater than 1")
+    if logistic_scale <= 0.0:
+        raise ValueError("logistic_scale must be greater than 0")
+    return 1.0 / (1.0 + logistic_base ** ((rating_b - rating_a) / logistic_scale))
 
 
 def actual_score(score_a: int, score_b: int) -> float:
@@ -60,8 +73,15 @@ def update_ratings(
     *,
     k_factor: float = K_FACTOR,
     home_advantage: float = HOME_ADVANTAGE,
+    logistic_base: float = LOGISTIC_BASE,
+    logistic_scale: float = LOGISTIC_SCALE,
 ) -> tuple[float, float, float, float]:
-    expected_home = expected_score(home_rating + home_advantage, away_rating)
+    expected_home = expected_score(
+        home_rating + home_advantage,
+        away_rating,
+        logistic_base=logistic_base,
+        logistic_scale=logistic_scale,
+    )
     actual_home = actual_score(home_score, away_score)
     change = k_factor * (actual_home - expected_home)
     return (
@@ -119,6 +139,8 @@ def calculate_elo(
     initial_rating: float = INITIAL_RATING,
     k_factor: float = K_FACTOR,
     home_advantage: float = HOME_ADVANTAGE,
+    logistic_base: float = LOGISTIC_BASE,
+    logistic_scale: float = LOGISTIC_SCALE,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     teams = sorted(set(game_df["home"]) | set(game_df["away"]))
     ratings = {team: initial_rating for team in teams}
@@ -143,6 +165,8 @@ def calculate_elo(
             row.away_score,
             k_factor=k_factor,
             home_advantage=home_advantage,
+            logistic_base=logistic_base,
+            logistic_scale=logistic_scale,
         )
 
         ratings[row.home] = new_home
@@ -199,6 +223,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--initial-rating", type=float, default=INITIAL_RATING)
     parser.add_argument("--k-factor", type=float, default=K_FACTOR)
     parser.add_argument("--home-advantage", type=float, default=HOME_ADVANTAGE)
+    parser.add_argument("--logistic-base", type=float, default=LOGISTIC_BASE)
+    parser.add_argument("--logistic-scale", type=float, default=LOGISTIC_SCALE)
     parser.add_argument("--include-non-regular", action="store_true")
     return parser.parse_args()
 
@@ -211,6 +237,8 @@ def main() -> None:
         initial_rating=args.initial_rating,
         k_factor=args.k_factor,
         home_advantage=args.home_advantage,
+        logistic_base=args.logistic_base,
+        logistic_scale=args.logistic_scale,
     )
 
     write_outputs(args.output_dir, games_df, ranking_df, by_game_df, history_df)
