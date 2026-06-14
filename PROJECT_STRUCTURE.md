@@ -21,6 +21,7 @@
 | path | role |
 | --- | --- |
 | `npb/2026/requirements.txt` | Python依存ライブラリ |
+| `npb/2026/elo_settings.py` | K値、ロジスティック関数、初期値、ホーム補正の設定 |
 | `npb/2026/game_results_jp_2026.csv` | 2026年の試合結果CSV。Elo計算の入力 |
 | `npb/2026/fetch_results_2026.py` | NPB公式サイトから一軍公式戦の試合結果を取得する |
 | `npb/2026/elo.py` | Eloレーティング計算の中核ロジック |

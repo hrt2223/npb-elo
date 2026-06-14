@@ -12,7 +12,13 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-from elo import HOME_ADVANTAGE, INITIAL_RATING, expected_score
+from elo import (
+    HOME_ADVANTAGE,
+    INITIAL_RATING,
+    LOGISTIC_BASE,
+    LOGISTIC_SCALE,
+    expected_score,
+)
 
 
 YEAR = 2026
@@ -175,12 +181,19 @@ def probability_rows(
     ratings: dict[str, float],
     *,
     home_advantage: float = HOME_ADVANTAGE,
+    logistic_base: float = LOGISTIC_BASE,
+    logistic_scale: float = LOGISTIC_SCALE,
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for game in sorted(games, key=lambda g: (g.start_time, g.home, g.away)):
         home_elo = ratings.get(game.home, INITIAL_RATING)
         away_elo = ratings.get(game.away, INITIAL_RATING)
-        home_win_probability = expected_score(home_elo + home_advantage, away_elo)
+        home_win_probability = expected_score(
+            home_elo + home_advantage,
+            away_elo,
+            logistic_base=logistic_base,
+            logistic_scale=logistic_scale,
+        )
         away_win_probability = 1.0 - home_win_probability
         rows.append(
             {
@@ -228,6 +241,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ranking-csv", type=Path, default=DEFAULT_RANKING_CSV)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_CSV)
     parser.add_argument("--home-advantage", type=float, default=HOME_ADVANTAGE)
+    parser.add_argument("--logistic-base", type=float, default=LOGISTIC_BASE)
+    parser.add_argument("--logistic-scale", type=float, default=LOGISTIC_SCALE)
     return parser.parse_args()
 
 
@@ -235,7 +250,13 @@ def main() -> None:
     args = parse_args()
     games = fetch_schedule_for_date(args.date, year=args.year)
     ratings = load_ratings(args.ranking_csv)
-    rows = probability_rows(games, ratings, home_advantage=args.home_advantage)
+    rows = probability_rows(
+        games,
+        ratings,
+        home_advantage=args.home_advantage,
+        logistic_base=args.logistic_base,
+        logistic_scale=args.logistic_scale,
+    )
     write_csv(args.output, rows)
 
     print(f"Target date: {args.date}")

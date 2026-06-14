@@ -10,6 +10,8 @@ from elo import (
     HOME_ADVANTAGE,
     INITIAL_RATING,
     K_FACTOR,
+    LOGISTIC_BASE,
+    LOGISTIC_SCALE,
     calculate_elo,
     load_games,
     write_outputs,
@@ -274,6 +276,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--initial-rating", type=float, default=INITIAL_RATING)
     parser.add_argument("--k-factor", type=float, default=K_FACTOR)
     parser.add_argument("--home-advantage", type=float, default=HOME_ADVANTAGE)
+    parser.add_argument("--logistic-base", type=float, default=LOGISTIC_BASE)
+    parser.add_argument("--logistic-scale", type=float, default=LOGISTIC_SCALE)
     parser.add_argument("--include-non-regular", action="store_true")
     return parser.parse_args()
 
@@ -333,6 +337,8 @@ def main() -> None:
         initial_rating=args.initial_rating,
         k_factor=args.k_factor,
         home_advantage=args.home_advantage,
+        logistic_base=args.logistic_base,
+        logistic_scale=args.logistic_scale,
     )
 
     update_outputs_from_frames(
