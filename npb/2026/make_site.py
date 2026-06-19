@@ -375,7 +375,8 @@ def team_recent_table_html(recent_df: pd.DataFrame) -> str:
         return '<div class="empty">データがありません</div>'
 
     rows = []
-    for _, row in recent_df.iterrows():
+    display_df = recent_df.sort_values(["date", "game_id"], ascending=[False, False])
+    for _, row in display_df.iterrows():
         result = str(row["result"])
         rows.append(
             "<tr>"
