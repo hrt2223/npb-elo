@@ -123,11 +123,28 @@ def df_to_table(df: pd.DataFrame, *, max_rows: int | None = None) -> str:
     return f"<table><thead><tr>{header}</tr></thead><tbody>{''.join(rows)}</tbody></table>"
 
 
-def today_probabilities_html(df: pd.DataFrame) -> str:
+def schedule_section_df(df: pd.DataFrame, *, section_key: str) -> pd.DataFrame:
+    if df.empty:
+        return df
+    if section_key in LEAGUE_LABELS and "game_type" in df.columns:
+        return df[df["game_type"] == LEAGUE_LABELS[section_key]].copy()
+    if section_key == "interleague" and "game_type" in df.columns:
+        return df[df["game_type"] == "交流戦"].copy()
+    return df
+
+
+def today_probabilities_html(df: pd.DataFrame, *, section_key: str = "overall") -> str:
     if df.empty:
         return '<div class="empty">今日の対戦予定はありません</div>'
 
     date = str(df.iloc[0].get("date", "-"))
+    df = schedule_section_df(df, section_key=section_key)
+    if df.empty:
+        return (
+            f'<div class="schedule-date">対象日: {html.escape(date)}</div>'
+            '<div class="empty">このタブの今日の対戦予定はありません</div>'
+        )
+
     cards = []
     for _, row in df.iterrows():
         home = str(row["home"])
@@ -426,6 +443,7 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "chartData": chart_df.to_dict(orient="records") if not chart_df.empty else [],
         "teamLinksHtml": build_team_links_html(str(section["key"])),
         "standingsHtml": standings_for_section_html(read_csv(STANDINGS_CSV), section_key=str(section["key"])),
+        "scheduleHtml": today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV), section_key=str(section["key"])),
     }
 
 
@@ -645,7 +663,6 @@ def build_html(payload: list[dict[str, str]]) -> str:
     data_json = json.dumps(payload, ensure_ascii=False)
     colors_json = json.dumps(TEAM_COLORS, ensure_ascii=False)
     first = payload[0]
-    today_html = today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV))
     tabs = "".join(
         f'<button class="tab{" is-active" if item["key"] == first["key"] else ""}" data-key="{item["key"]}">{html.escape(item["label"])}</button>'
         for item in payload
@@ -1138,7 +1155,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
           <a href="../output/today_probabilities.csv">CSV</a>
         </div>
       </div>
-      {today_html}
+      <div id="scheduleContent">{first["scheduleHtml"]}</div>
     </section>
 
     <section class="panel" style="margin-bottom: 16px;">
@@ -1372,6 +1389,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       document.getElementById("tableLink").href = item.tableLink;
       document.getElementById("latestLink").href = item.latestLink;
       document.getElementById("rankingTable").innerHTML = item.rankingHtml;
+      document.getElementById("scheduleContent").innerHTML = item.scheduleHtml;
       document.getElementById("standingsContent").innerHTML = item.standingsHtml;
       document.getElementById("historyTable").innerHTML = item.tableHtml;
       document.getElementById("teamLinks").innerHTML = item.teamLinksHtml || "";
