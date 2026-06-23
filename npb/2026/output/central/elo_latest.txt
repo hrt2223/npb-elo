@@ -1,5 +1,5 @@
 2026 NPB Elo latest ranking - Central League
-Updated at: 2026-06-22 18:37:41
+Updated at: 2026-06-23 02:37:37
 CSV: game_results_jp_2026.csv
 Games: 255
 Period: 2026-03-27 - 2026-06-21
