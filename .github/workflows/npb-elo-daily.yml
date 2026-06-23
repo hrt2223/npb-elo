@@ -4,6 +4,10 @@ on:
   schedule:
     # 00:00 UTC = 09:00 JST. Updates today's schedule and win probabilities.
     - cron: "0 0 * * *"
+    # Lineup checks for day games and night games. The script only fetches games
+    # that are within 30 minutes of first pitch and keeps already saved starters.
+    - cron: "30 2,3,4,7,8,9 * * *"
+    - cron: "0 3,4,8,9 * * *"
     # 14:55 UTC = 23:55 JST. This avoids depending on the local PC.
     - cron: "55 14 * * *"
   workflow_dispatch:
@@ -43,6 +47,7 @@ jobs:
           python make_elo_tables.py
           python make_elo_graphs.py
           python update_today_probabilities.py
+          python fetch_lineups_2026.py
           python fetch_standings_2026.py
           python make_site.py
 

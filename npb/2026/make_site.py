@@ -11,6 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 SITE_DIR = BASE_DIR / "site"
 TODAY_PROBABILITY_CSV = OUTPUT_DIR / "today_probabilities.csv"
+TODAY_LINEUPS_CSV = OUTPUT_DIR / "today_lineups.csv"
 STANDINGS_CSV = OUTPUT_DIR / "standings.csv"
 
 TEAM_COLORS = {
@@ -133,7 +134,50 @@ def schedule_section_df(df: pd.DataFrame, *, section_key: str) -> pd.DataFrame:
     return df
 
 
-def today_probabilities_html(df: pd.DataFrame, *, section_key: str = "overall") -> str:
+def lineup_html(lineup_df: pd.DataFrame, *, date: str, home: str, away: str) -> str:
+    if lineup_df.empty:
+        return '<div class="lineup-empty">スタメン未発表</div>'
+
+    game_key = f"{date}_{home}_{away}"
+    game_df = lineup_df[(lineup_df["game_key"] == game_key) & (lineup_df["status"] == "available")].copy()
+    if game_df.empty:
+        return '<div class="lineup-empty">スタメン未発表</div>'
+
+    columns = []
+    for team in [home, away]:
+        team_df = game_df[game_df["team"] == team].copy()
+        if team_df.empty:
+            continue
+        team_df["batting_order"] = pd.to_numeric(team_df["batting_order"], errors="coerce")
+        team_df = team_df.sort_values("batting_order")
+        items = []
+        for _, row in team_df.iterrows():
+            order = int(row["batting_order"])
+            position = str(row.get("position", ""))
+            player = str(row.get("player_name", ""))
+            items.append(
+                f'<li><span>{order}</span><span>{html.escape(position)}</span><strong>{html.escape(player)}</strong></li>'
+            )
+        columns.append(
+            f"""
+            <div class="lineup-team">
+              <div class="lineup-team-title">{html.escape(team)}</div>
+              <ol class="lineup-list">{"".join(items)}</ol>
+            </div>
+            """
+        )
+
+    if not columns:
+        return '<div class="lineup-empty">スタメン未発表</div>'
+    return f'<div class="lineup-box">{"".join(columns)}</div>'
+
+
+def today_probabilities_html(
+    df: pd.DataFrame,
+    *,
+    lineup_df: pd.DataFrame,
+    section_key: str = "overall",
+) -> str:
     if df.empty:
         return '<div class="empty">今日の対戦予定はありません</div>'
 
@@ -159,6 +203,7 @@ def today_probabilities_html(df: pd.DataFrame, *, section_key: str = "overall") 
             for value in [str(row.get("start_time", "")).strip(), str(row.get("stadium", "")).strip()]
             if value
         )
+        lineups = lineup_html(lineup_df, date=str(row["date"]), home=home, away=away)
 
         cards.append(
             f"""
@@ -185,6 +230,7 @@ def today_probabilities_html(df: pd.DataFrame, *, section_key: str = "overall") 
                 <span>Elo {float(row["home_elo"]):.1f}</span>
                 <span>Elo {float(row["away_elo"]):.1f}</span>
               </div>
+              {lineups}
             </article>
             """
         )
@@ -444,7 +490,11 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "chartData": chart_df.to_dict(orient="records") if not chart_df.empty else [],
         "teamLinksHtml": build_team_links_html(str(section["key"])),
         "standingsHtml": standings_for_section_html(read_csv(STANDINGS_CSV), section_key=str(section["key"])),
-        "scheduleHtml": today_probabilities_html(read_csv(TODAY_PROBABILITY_CSV), section_key=str(section["key"])),
+        "scheduleHtml": today_probabilities_html(
+            read_csv(TODAY_PROBABILITY_CSV),
+            lineup_df=read_csv(TODAY_LINEUPS_CSV),
+            section_key=str(section["key"]),
+        ),
     }
 
 
@@ -914,6 +964,55 @@ def build_html(payload: list[dict[str, str]]) -> str:
       font-size: 11px;
       margin-top: 8px;
     }}
+    .lineup-box {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+    }}
+    .lineup-team {{
+      min-width: 0;
+    }}
+    .lineup-team-title {{
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }}
+    .lineup-list {{
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }}
+    .lineup-list li {{
+      display: grid;
+      grid-template-columns: 18px 22px minmax(0, 1fr);
+      gap: 5px;
+      align-items: center;
+      color: #dbe3ee;
+      font-size: 11px;
+      min-width: 0;
+    }}
+    .lineup-list span {{
+      color: var(--muted);
+    }}
+    .lineup-list strong {{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #f8fafc;
+    }}
+    .lineup-empty {{
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      color: var(--muted);
+      font-size: 12px;
+    }}
     .standings-grid {{
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1115,6 +1214,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .schedule-grid {{
         grid-template-columns: 1fr;
       }}
+      .lineup-box {{
+        grid-template-columns: 1fr;
+      }}
     }}
   </style>
 </head>
@@ -1154,6 +1256,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
         <div class="panel-title">今日の対戦予定と勝率</div>
         <div class="links">
           <a href="../output/today_probabilities.csv">CSV</a>
+          <a href="../output/today_lineups.csv">スタメンCSV</a>
         </div>
       </div>
       <div id="scheduleContent">{first["scheduleHtml"]}</div>
