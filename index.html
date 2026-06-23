@@ -24,7 +24,12 @@
 <body>
   <main>
     <p>2026 NPB Elo Dashboard を開いています。</p>
-    <p><a href="npb/2026/site/">開かない場合はこちら</a></p>
+    <p><a id="site-link" href="npb/2026/site/">開かない場合はこちら</a></p>
   </main>
+  <script>
+    const target = `npb/2026/site/?v=${Date.now()}`;
+    document.getElementById("site-link").href = target;
+    window.location.replace(target);
+  </script>
 </body>
 </html>
