@@ -172,6 +172,25 @@ def lineup_html(lineup_df: pd.DataFrame, *, date: str, home: str, away: str) -> 
     return f'<div class="lineup-box">{"".join(columns)}</div>'
 
 
+def probable_starter_html(row: pd.Series) -> str:
+    home = str(row["home"])
+    away = str(row["away"])
+    home_starter = str(row.get("home_probable_starter", "") or "").strip()
+    away_starter = str(row.get("away_probable_starter", "") or "").strip()
+
+    if not home_starter and not away_starter:
+        return '<div class="starter-row"><span>予告先発</span><strong>未発表</strong></div>'
+
+    home_text = home_starter or "未発表"
+    away_text = away_starter or "未発表"
+    return (
+        '<div class="starter-row">'
+        '<span>予告先発</span>'
+        f'<strong>{html.escape(home)}: {html.escape(home_text)} / {html.escape(away)}: {html.escape(away_text)}</strong>'
+        "</div>"
+    )
+
+
 def today_probabilities_html(
     df: pd.DataFrame,
     *,
@@ -203,6 +222,7 @@ def today_probabilities_html(
             for value in [str(row.get("start_time", "")).strip(), str(row.get("stadium", "")).strip()]
             if value
         )
+        probable_starters = probable_starter_html(row)
         lineups = lineup_html(lineup_df, date=str(row["date"]), home=home, away=away)
 
         cards.append(
@@ -218,6 +238,7 @@ def today_probabilities_html(
                 <div class="team-name is-away"><span class="team-dot" style="background:{html.escape(away_color)}"></span>{html.escape(away)}</div>
               </div>
               <div class="schedule-venue">{html.escape(venue)}</div>
+              {probable_starters}
               <div class="probability-row">
                 <span>{home_prob:.1f}%</span>
                 <div class="probability-bar" aria-label="{html.escape(home)} 勝率 {home_prob:.1f}% / {html.escape(away)} 勝率 {away_prob:.1f}%">
@@ -925,6 +946,26 @@ def build_html(payload: list[dict[str, str]]) -> str:
       font-size: 12px;
       min-height: 18px;
       margin-bottom: 12px;
+    }}
+    .starter-row {{
+      display: grid;
+      gap: 3px;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border: 1px solid rgba(125, 211, 252, 0.16);
+      border-radius: 6px;
+      background: rgba(15, 23, 42, 0.62);
+      color: #dbeafe;
+      font-size: 12px;
+    }}
+    .starter-row span {{
+      color: var(--muted);
+      font-size: 11px;
+    }}
+    .starter-row strong {{
+      color: #f8fafc;
+      font-weight: 800;
+      overflow-wrap: anywhere;
     }}
     .probability-row {{
       display: grid;
