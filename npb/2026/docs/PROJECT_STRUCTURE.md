@@ -6,9 +6,9 @@
 
 | path | role |
 | --- | --- |
-| `README.md` | プロジェクト概要と主要コマンド |
-| `PROJECT_STRUCTURE.md` | このファイル。どこに何があるかの説明 |
-| `UPDATE_FLOW.md` | 自動更新、予告先発取得、PC同期の関係まとめ |
+| `npb/2026/docs/README.md` | プロジェクト概要と主要コマンド |
+| `npb/2026/docs/PROJECT_STRUCTURE.md` | このファイル。どこに何があるかの説明 |
+| `npb/2026/docs/UPDATE_FLOW.md` | 自動更新、予告先発取得、PC同期の関係まとめ |
 | `index.html` | GitHub Pagesの入口。`npb/2026/site/index.html` へ案内する |
 | `.nojekyll` | GitHub PagesでJekyll処理を無効にする設定 |
 | `.gitignore` | Pythonキャッシュやローカルログなど、Git管理しないもの |
