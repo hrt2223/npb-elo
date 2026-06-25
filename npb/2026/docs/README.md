@@ -10,6 +10,7 @@ The production code lives in `npb/2026`. GitHub Actions updates the data every d
 
 For the folder map, see [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md).
 For the update flow and local PC sync, see [UPDATE_FLOW.md](UPDATE_FLOW.md).
+For the implemented feature list, see [FEATURES.md](FEATURES.md).
 
 ## Main Commands
 
