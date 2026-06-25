@@ -156,11 +156,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       overflow-wrap: anywhere;
       color: #f8fafc;
     }}
-    .top-grid {{
+    .top-stack {{
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(380px, 0.75fr);
       gap: 16px;
-      align-items: start;
       margin-bottom: 16px;
     }}
     .layout {{
@@ -545,9 +543,6 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .layout {{
         grid-template-columns: 1fr;
       }}
-      .top-grid {{
-        grid-template-columns: 1fr;
-      }}
       .schedule-grid {{
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }}
@@ -610,7 +605,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       </div>
     </section>
 
-    <section class="top-grid">
+    <section class="top-stack">
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">今日の対戦予定と勝率</div>
