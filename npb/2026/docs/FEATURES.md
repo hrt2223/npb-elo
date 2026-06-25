@@ -37,6 +37,7 @@
 | feature | status | main files | output |
 | --- | --- | --- | --- |
 | 黒基調のEloダッシュボード | 実装済み | `make_site.py`, `site_builder/dashboard.py` | `site/index.html` |
+| ダッシュボード配置の再設計 | 実装済み | `site_builder/dashboard.py` | サマリ、今日の対戦予定、順位表、グラフの配置 |
 | 全体、セ・リーグ、パ・リーグ、交流戦タブ | 実装済み | `make_site.py` | `site/index.html` |
 | Elo推移グラフ表示 | 実装済み | `make_site.py`, `make_elo_graphs.py` | `site/index.html` |
 | 日付の縦ラインで推移確認 | 実装済み | `make_site.py` | `site/index.html` |
