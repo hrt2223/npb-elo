@@ -32,7 +32,8 @@
 | `npb/2026/make_elo_graphs.py` | Elo推移グラフPNGを作る |
 | `npb/2026/update_today_probabilities.py` | 今日の試合予定、勝率予測、予告先発CSVを作る |
 | `npb/2026/fetch_standings_2026.py` | 順位表CSVを作る |
-| `npb/2026/make_site.py` | 静的サイトHTMLを生成する |
+| `npb/2026/make_site.py` | 静的サイトHTML生成の入口 |
+| `npb/2026/site_builder/` | サイト生成処理を機能ごとに分けたPythonパッケージ |
 | `npb/2026/daily_update.ps1` | ローカルPCでまとめて更新するPowerShellスクリプト |
 | `npb/2026/install_daily_task.ps1` | Windowsタスクスケジューラへ登録するための補助スクリプト |
 | `npb/2026/sync_from_github.ps1` | GitHub Actionsが更新した生成データをこのPCへ取り込む |
@@ -69,6 +70,21 @@ GitHub Pagesで表示される静的サイトです。
 | `npb/2026/site/pacific/` | パ・リーグ各球団ページ |
 
 球団ページでは、直近10試合の勝敗、相手、Elo変化を確認できます。
+
+## Site Builder: `npb/2026/site_builder`
+
+`make_site.py` から呼び出されるサイト生成コードです。
+
+| path | role |
+| --- | --- |
+| `npb/2026/site_builder/config.py` | チーム色、リーグ、出力パスなどの設定 |
+| `npb/2026/site_builder/tables.py` | CSV読み込み、HTML表、最新情報の共通処理 |
+| `npb/2026/site_builder/schedule.py` | 今日の試合予定、勝率、予告先発、スタメン表示 |
+| `npb/2026/site_builder/standings.py` | 順位表HTML |
+| `npb/2026/site_builder/team_pages.py` | 球団ページ、直近10試合、Elo変化表示 |
+| `npb/2026/site_builder/payload.py` | タブごとの表示データ作成 |
+| `npb/2026/site_builder/dashboard.py` | ダッシュボードHTML |
+| `npb/2026/site_builder/builder.py` | サイト全体の生成手順 |
 
 ## Automation
 

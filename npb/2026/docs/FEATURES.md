@@ -36,18 +36,18 @@
 
 | feature | status | main files | output |
 | --- | --- | --- | --- |
-| 黒基調のEloダッシュボード | 実装済み | `make_site.py` | `site/index.html` |
+| 黒基調のEloダッシュボード | 実装済み | `make_site.py`, `site_builder/dashboard.py` | `site/index.html` |
 | 全体、セ・リーグ、パ・リーグ、交流戦タブ | 実装済み | `make_site.py` | `site/index.html` |
 | Elo推移グラフ表示 | 実装済み | `make_site.py`, `make_elo_graphs.py` | `site/index.html` |
 | 日付の縦ラインで推移確認 | 実装済み | `make_site.py` | `site/index.html` |
 | Eloランキング表表示 | 実装済み | `make_site.py` | `site/index.html` |
 | Elo推移表表示 | 実装済み | `make_site.py` | `site/index.html` |
-| 今日の対戦予定、勝率、予告先発表示 | 実装済み | `make_site.py` | `site/index.html` |
-| 順位表表示 | 実装済み | `make_site.py` | `site/index.html` |
-| スタメン表示 | 実装済み | `make_site.py` | `site/index.html` |
-| セ・リーグ、パ・リーグの各球団ページ | 実装済み | `make_site.py` | `site/central/`, `site/pacific/` |
-| 球団ページの直近10試合成績表示 | 実装済み | `make_site.py` | 各球団ページ |
-| 球団ページのElo上昇率表示 | 実装済み | `make_site.py` | 各球団ページ |
+| 今日の対戦予定、勝率、予告先発表示 | 実装済み | `site_builder/schedule.py` | `site/index.html` |
+| 順位表表示 | 実装済み | `site_builder/standings.py` | `site/index.html` |
+| スタメン表示 | 実装済み | `site_builder/schedule.py` | `site/index.html` |
+| セ・リーグ、パ・リーグの各球団ページ | 実装済み | `site_builder/team_pages.py` | `site/central/`, `site/pacific/` |
+| 球団ページの直近10試合成績表示 | 実装済み | `site_builder/team_pages.py` | 各球団ページ |
+| 球団ページのElo上昇率表示 | 実装済み | `site_builder/team_pages.py` | 各球団ページ |
 | 指定チームカラーのグラフ、カード表示 | 実装済み | `make_site.py`, `make_elo_graphs.py` | サイト、グラフPNG |
 
 ## Automation
