@@ -8,29 +8,35 @@ if (-not (Test-Path $SyncScript)) {
     throw "sync_from_github.ps1 not found: $SyncScript"
 }
 
-$Action = New-ScheduledTaskAction `
-    -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$SyncScript`"" `
-    -WorkingDirectory $ScriptDir
+$TaskCommand = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$SyncScript`""
 
-$Triggers = @(
-    New-ScheduledTaskTrigger -AtLogOn
-    New-ScheduledTaskTrigger -Daily -At "09:15"
-    New-ScheduledTaskTrigger -Daily -At "00:10"
+$Tasks = @(
+    @{ Name = "$TaskName Logon"; Schedule = "ONLOGON"; Time = $null },
+    @{ Name = "$TaskName Morning"; Schedule = "DAILY"; Time = "09:15" },
+    @{ Name = "$TaskName Night"; Schedule = "DAILY"; Time = "00:10" }
 )
 
-$Settings = New-ScheduledTaskSettingsSet `
-    -StartWhenAvailable `
-    -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries
+foreach ($Task in $Tasks) {
+    $Args = @(
+        "/Create",
+        "/TN", $Task.Name,
+        "/TR", $TaskCommand,
+        "/SC", $Task.Schedule,
+        "/F",
+        "/RL", "LIMITED"
+    )
 
-Register-ScheduledTask `
-    -TaskName $TaskName `
-    -Action $Action `
-    -Trigger $Triggers `
-    -Settings $Settings `
-    -Description "Sync generated NPB 2026 Elo data from GitHub Actions to this PC." `
-    -Force | Out-Null
+    if ($Task.Time) {
+        $Args += @("/ST", $Task.Time)
+    }
 
-Write-Host "Registered scheduled task: $TaskName"
-Write-Host "Runs at logon, 09:15, and 00:10 when this PC is available."
+    & schtasks.exe @Args
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to register scheduled task: $($Task.Name)"
+    }
+}
+
+Write-Host "Registered scheduled tasks:"
+Write-Host "- $TaskName Logon"
+Write-Host "- $TaskName Morning"
+Write-Host "- $TaskName Night"

@@ -71,13 +71,22 @@ cd C:\2026\kenkyu\elo\npb\2026
 powershell -ExecutionPolicy Bypass -File .\install_sync_task.ps1
 ```
 
-登録すると、このPCが使える時に以下のタイミングで `sync_from_github.ps1` が動きます。
+登録できる環境では、このPCが使える時に以下のタイミングで `sync_from_github.ps1` が動きます。
 
 | timing | purpose |
 | --- | --- |
 | ログオン時 | PCを開いた時に最新データへ寄せる |
 | 09:15 | 朝のGitHub Actions更新後に反映する |
 | 00:10 | 夜の試合結果更新後に反映する |
+
+タスクスケジューラ登録で `Access is denied.` が出る場合は、スタートアップ方式を使います。
+
+```powershell
+cd C:\2026\kenkyu\elo\npb\2026
+powershell -ExecutionPolicy Bypass -File .\install_startup_sync.ps1
+```
+
+この方式では、Windowsにログオンした時だけ `sync_from_github.ps1` が動きます。
 
 `sync_from_github.ps1` は生成データだけを更新します。
 

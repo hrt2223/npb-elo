@@ -36,6 +36,7 @@
 | `npb/2026/install_daily_task.ps1` | Windowsタスクスケジューラへ登録するための補助スクリプト |
 | `npb/2026/sync_from_github.ps1` | GitHub Actionsが更新した生成データをこのPCへ取り込む |
 | `npb/2026/install_sync_task.ps1` | PC起動時などにGitHub同期するタスクを登録する |
+| `npb/2026/install_startup_sync.ps1` | タスク登録できない場合に、ログオン時同期をスタートアップへ登録する |
 
 ## Generated Data: `npb/2026/output`
 
@@ -77,6 +78,7 @@ GitHub Pagesで表示される静的サイトです。
 | `npb/2026/install_daily_task.ps1` | 手元のPCで定期実行したい場合だけ使う |
 | `npb/2026/sync_from_github.ps1` | GitHubで更新された生成データを手元PCへ反映する |
 | `npb/2026/install_sync_task.ps1` | ログオン時、09:15、00:10に同期するタスクを登録する |
+| `npb/2026/install_startup_sync.ps1` | Windowsログオン時だけ同期するスタートアップコマンドを登録する |
 
 PCを開かない日でも更新したい場合は、GitHub Actionsを使います。ローカルPCのタスクスケジューラは、PCが起動している時だけ動きます。
 
