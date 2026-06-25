@@ -2,7 +2,7 @@ name: NPB 2026 Elo Daily Update
 
 on:
   schedule:
-    # 00:00 UTC = 09:00 JST. Updates today's schedule and win probabilities.
+    # 00:00 UTC = 09:00 JST. Updates today's schedule, win probabilities, and probable starters.
     - cron: "0 0 * * *"
     # Lineup checks for day games and night games. The script only fetches games
     # that are within 30 minutes of first pitch and keeps already saved starters.
@@ -41,11 +41,12 @@ jobs:
           MONTH=$(python -c "from datetime import datetime, timedelta, timezone; print(datetime.now(timezone(timedelta(hours=9))).month)")
           python fetch_results_2026.py --month "$MONTH" --merge-existing
 
-      - name: Update Elo outputs
+      - name: Update Elo outputs and site data
         run: |
           python update_daily.py
           python make_elo_tables.py
           python make_elo_graphs.py
+          # This fetches today's schedule, Elo win probabilities, and probable starters.
           python update_today_probabilities.py
           python fetch_lineups_2026.py
           python fetch_standings_2026.py

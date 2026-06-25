@@ -17,6 +17,7 @@ try {
     python .\update_daily.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_elo_tables.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_elo_graphs.py 2>&1 | Tee-Object -FilePath $RunLog -Append
+    Add-Content -Path $RunLog -Value "Fetching today's schedule, win probabilities, and probable starters."
     python .\update_today_probabilities.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\fetch_lineups_2026.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\fetch_standings_2026.py 2>&1 | Tee-Object -FilePath $RunLog -Append
