@@ -1,5 +1,5 @@
 2026 NPB Elo latest ranking - All NPB
-Updated at: 2026-06-26 10:36:34
+Updated at: 2026-06-26 10:56:16
 CSV: game_results_jp_2026.csv
 Games: 421
 Period: 2026-03-27 - 2026-06-25
