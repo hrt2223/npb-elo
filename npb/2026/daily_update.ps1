@@ -19,7 +19,7 @@ try {
     python .\make_elo_graphs.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     Add-Content -Path $RunLog -Value "Fetching today's schedule, win probabilities, and probable starters."
     python .\update_today_probabilities.py 2>&1 | Tee-Object -FilePath $RunLog -Append
-    python .\fetch_lineups_2026.py 2>&1 | Tee-Object -FilePath $RunLog -Append
+    python .\fetch_lineups_2026.py --minutes-before 60 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\fetch_standings_2026.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     python .\make_site.py 2>&1 | Tee-Object -FilePath $RunLog -Append
     $finished = Get-Date -Format "yyyy-MM-dd HH:mm:ss"

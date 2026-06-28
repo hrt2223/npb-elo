@@ -22,7 +22,7 @@
    - NPB公式の予告先発ページから予告先発を取得する
    - `output/today_probabilities.csv` を更新する
 6. `fetch_lineups_2026.py`
-   - 試合開始前後のタイミングでスタメンを取得する
+   - 試合開始60分前以降のタイミングでスタメンを取得する
    - `output/today_lineups.csv` を更新する
 7. `fetch_standings_2026.py`
    - 順位表を取得する
@@ -31,6 +31,41 @@
    - `site/index.html` と球団ページを作る
 
 最後にGitHub Actionsが `game_results_jp_2026.csv`、`output/`、`site/` をコミットしてGitHubへpushします。GitHub Pagesはその内容を公開します。
+
+## 低遅延のスタメン更新
+
+スタメン反映は `.github/workflows/npb-elo-lineups.yml` でも実行できます。
+このワークフローはElo再計算やグラフ生成を省き、次の処理だけを行います。
+
+1. `update_today_probabilities.py`
+2. `fetch_lineups_2026.py --minutes-before 60`
+3. `fetch_standings_2026.py`
+4. `make_site.py`
+5. `output/today_probabilities.csv`、`output/today_lineups.csv`、`output/standings.csv`、`site/` をcommit & push
+
+cron-job.org などの外部cronから GitHub REST API の `workflow_dispatch` をPOSTすると、GitHub Actionsのschedule混雑を避けて起動できます。
+
+```text
+POST https://api.github.com/repos/hrt2223/npb-elo/actions/workflows/npb-elo-lineups.yml/dispatches
+```
+
+Body:
+
+```json
+{"ref":"main"}
+```
+
+必要なヘッダー:
+
+```text
+Accept: application/vnd.github+json
+Authorization: Bearer <GitHub fine-grained PAT>
+X-GitHub-Api-Version: 2022-11-28
+Content-Type: application/json
+```
+
+GitHub token は `hrt2223/npb-elo` だけに限定し、Actions の read/write 権限だけを付けます。
+フル更新と軽量更新は同じ concurrency グループに入れているため、同時刻に起動してもpush競合を避けます。
 
 ## 予告先発の位置づけ
 

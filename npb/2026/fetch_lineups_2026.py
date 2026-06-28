@@ -336,7 +336,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--year", type=int, default=YEAR)
     parser.add_argument("--schedule-csv", type=Path, default=DEFAULT_SCHEDULE_CSV)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_CSV)
-    parser.add_argument("--minutes-before", type=int, default=30)
+    parser.add_argument("--minutes-before", type=int, default=60)
     parser.add_argument("--force", action="store_true", help="Ignore the start-time window.")
     parser.add_argument("--refresh", action="store_true", help="Overwrite existing lineup rows for the same game/team/order.")
     return parser.parse_args()
