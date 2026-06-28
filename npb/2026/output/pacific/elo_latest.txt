@@ -1,13 +1,13 @@
 2026 NPB Elo latest ranking - Pacific League
-Updated at: 2026-06-27 15:55:37
+Updated at: 2026-06-28 02:47:59
 CSV: game_results_jp_2026.csv
-Games: 268
-Period: 2026-03-27 - 2026-06-26
+Games: 270
+Period: 2026-03-27 - 2026-06-27
 
  rank   team final_elo
     1 ソフトバンク    1596.2
-    2     西武    1578.0
-    3   日本ハム    1555.0
+    2   日本ハム    1569.0
+    3     西武    1564.0
     4    ロッテ    1520.6
-    5  オリックス    1503.9
-    6     楽天    1425.1
+    5  オリックス    1488.1
+    6     楽天    1440.9
