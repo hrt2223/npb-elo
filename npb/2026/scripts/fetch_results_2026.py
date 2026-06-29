@@ -206,12 +206,16 @@ def parse_month(tokens: list[str], *, year: int, month: int) -> list[ResultGame]
                     i += 1
                     continue
 
+                if not TIME_RE.match(tokens[start_time_index]):
+                    i += 1
+                    continue
+
                 if not is_finished_game_context(tokens, start_time_index + 1):
                     i += 1
                     continue
 
                 stadium = tokens[stadium_index]
-                start_time = tokens[start_time_index] if TIME_RE.match(tokens[start_time_index]) else ""
+                start_time = tokens[start_time_index]
                 games_by_date[current_date] += 1
                 games.append(
                     ResultGame(
