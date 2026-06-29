@@ -25,7 +25,7 @@
    - 試合開始60分前以降のタイミングでスタメンを取得する
    - `output/today_lineups.csv` を更新する
 7. `scripts/fetch_standings_2026.py`
-   - 順位表を取得する
+   - `game_results_jp_2026.csv` から順位表を計算する
    - `output/standings.csv` を更新する
 8. `scripts/make_site.py`
    - `site/index.html` と球団ページを作る

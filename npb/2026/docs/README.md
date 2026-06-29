@@ -28,6 +28,7 @@ python scripts/make_site.py
 ```
 
 `scripts/update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters.
+`scripts/fetch_standings_2026.py` builds standings from `game_results_jp_2026.csv`; it does not wait for the official NPB standings page.
 
 `tasks/daily_update.ps1` runs the same update flow locally. The GitHub Actions workflow is the main automation, so updates can run even when this PC is off.
 
