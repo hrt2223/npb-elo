@@ -142,7 +142,15 @@ def rows_for_csv(standings: list[TeamStanding], source_date: str) -> list[dict[s
     rows: list[dict[str, object]] = []
     for league_key in LEAGUES:
         league_rows = [standing for standing in standings if standing.league == league_key]
-        league_rows.sort(key=lambda item: (-item.win_pct, -item.wins, item.losses, item.team))
+        team_order = {team: index for index, team in enumerate(LEAGUES[league_key]["teams"])}
+        league_rows.sort(
+            key=lambda item: (
+                -item.win_pct,
+                -item.wins,
+                item.losses,
+                team_order.get(item.team, len(team_order)),
+            )
+        )
         first = league_rows[0]
 
         for rank, standing in enumerate(league_rows, start=1):

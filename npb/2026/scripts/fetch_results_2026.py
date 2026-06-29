@@ -454,6 +454,15 @@ def merge_rows(existing_rows: list[dict[str, object]], new_rows: list[dict[str, 
     return list(merged.values())
 
 
+def without_month_rows(rows: list[dict[str, object]], *, year: int, months: list[int]) -> list[dict[str, object]]:
+    prefixes = {f"{year:04d}-{month:02d}-" for month in months}
+    return [
+        row
+        for row in rows
+        if not any(str(row.get(COL_DATE, "")).startswith(prefix) for prefix in prefixes)
+    ]
+
+
 def count_games_from_rows(rows: list[dict[str, object]]) -> int:
     return len({str(row.get(COL_GAME_ID, "")) for row in rows if row.get(COL_GAME_ID)})
 
@@ -464,21 +473,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--year", type=int, default=YEAR)
     parser.add_argument("--month", type=int, action="append", help="Fetch only this month. Can be repeated.")
     parser.add_argument("--today-only", action="store_true", help="Fetch only the current scoreboard page.")
-    parser.add_argument("--merge-existing", action="store_true", help="Append fetched games to the existing CSV.")
+    parser.add_argument("--merge-existing", action="store_true", help="Merge fetched games into the existing CSV.")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    months = args.month if args.month else list(MONTHS)
     if args.today_only:
         games = fetch_today_games(year=args.year)
     else:
-        months = args.month if args.month else MONTHS
         games = fetch_games(year=args.year, months=months)
 
     fetched_rows = [row for game in games for row in game_to_rows(game)]
     if args.merge_existing:
         existing_rows = read_csv_rows(args.output)
+        if not args.today_only:
+            existing_rows = without_month_rows(existing_rows, year=args.year, months=list(months))
         merged_rows = merge_rows(existing_rows, fetched_rows)
         write_csv_rows(args.output, merged_rows)
         print(f"Fetched completed games: {len(games)}")
