@@ -1,8 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RepoRoot = Resolve-Path (Join-Path $ScriptDir "..\..")
-$RunLogDir = Join-Path $ScriptDir "logs"
+$BaseDir = (Resolve-Path (Join-Path $ScriptDir "..")).Path
+$RepoRoot = (Resolve-Path (Join-Path $BaseDir "..\..")).Path
+$RunLogDir = Join-Path $BaseDir "logs"
 $RunLog = Join-Path $RunLogDir "sync_from_github.log"
 
 New-Item -ItemType Directory -Path $RunLogDir -Force | Out-Null

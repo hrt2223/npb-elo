@@ -17,30 +17,30 @@ For the implemented feature list, see [FEATURES.md](FEATURES.md).
 Run from `npb/2026`.
 
 ```powershell
-python fetch_results_2026.py --merge-existing
-python update_daily.py
-python make_elo_tables.py
-python make_elo_graphs.py
-python update_today_probabilities.py
-python fetch_lineups_2026.py
-python fetch_standings_2026.py
-python make_site.py
+python scripts/fetch_results_2026.py --merge-existing
+python scripts/update_daily.py
+python scripts/make_elo_tables.py
+python scripts/make_elo_graphs.py
+python scripts/update_today_probabilities.py
+python scripts/fetch_lineups_2026.py
+python scripts/fetch_standings_2026.py
+python scripts/make_site.py
 ```
 
-`update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters.
+`scripts/update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters.
 
-`daily_update.ps1` runs the same update flow locally. The GitHub Actions workflow is the main automation, so updates can run even when this PC is off.
+`tasks/daily_update.ps1` runs the same update flow locally. The GitHub Actions workflow is the main automation, so updates can run even when this PC is off.
 
 To copy GitHub Actions generated data back to this PC:
 
 ```powershell
 cd C:\2026\kenkyu\elo\npb\2026
-powershell -ExecutionPolicy Bypass -File .\sync_from_github.ps1
+powershell -ExecutionPolicy Bypass -File .\tasks\sync_from_github.ps1
 ```
 
 ## Elo Parameters
 
-Edit `npb/2026/elo_settings.py` to change the calculation parameters used by both Elo updates and win-probability predictions.
+Edit `npb/2026/scripts/elo_settings.py` to change the calculation parameters used by both Elo updates and win-probability predictions.
 
 - `K_FACTOR`: rating movement per game
 - `LOGISTIC_BASE`: base of the expected-score function
@@ -49,3 +49,5 @@ Edit `npb/2026/elo_settings.py` to change the calculation parameters used by bot
 - `HOME_ADVANTAGE`: home-team rating adjustment
 
 After changing a value, rerun the daily update flow to rebuild the CSV files, graphs, probabilities, and site.
+
+

@@ -16,7 +16,7 @@ import pandas as pd
 
 
 YEAR = 2026
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_SCHEDULE_CSV = BASE_DIR / "output" / "today_probabilities.csv"
 DEFAULT_OUTPUT_CSV = BASE_DIR / "output" / "today_lineups.csv"
 TODAY_URL = "https://npb.jp/games/{year}/"

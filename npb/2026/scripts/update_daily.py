@@ -18,7 +18,7 @@ from elo import (
 )
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_CSV = BASE_DIR / "game_results_jp_2026.csv"
 DEFAULT_OUTPUT_DIR = BASE_DIR / "output"
 DEFAULT_LOG_DIR = BASE_DIR / "logs"

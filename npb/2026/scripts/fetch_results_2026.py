@@ -11,7 +11,7 @@ from urllib.request import Request, urlopen
 
 
 YEAR = 2026
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_CSV = BASE_DIR / "game_results_jp_2026.csv"
 MONTHS = range(3, 12)
 NPB_URL = "https://npb.jp/games/{year}/schedule_{month:02d}_detail.html"

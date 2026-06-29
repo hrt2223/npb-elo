@@ -22,7 +22,7 @@ from elo import (
 
 
 YEAR = 2026
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_RANKING_CSV = BASE_DIR / "output" / "elo_final_ranking.csv"
 DEFAULT_OUTPUT_CSV = BASE_DIR / "output" / "today_probabilities.csv"
 MONTH_URL = "https://npb.jp/games/{year}/schedule_{month:02d}_detail.html"

@@ -33,10 +33,10 @@ jobs:
 
       - name: Update today schedule, lineups, standings, and site
         run: |
-          python update_today_probabilities.py
-          python fetch_lineups_2026.py --minutes-before 60
-          python fetch_standings_2026.py
-          python make_site.py
+          python scripts/update_today_probabilities.py
+          python scripts/fetch_lineups_2026.py --minutes-before 60
+          python scripts/fetch_standings_2026.py
+          python scripts/make_site.py
 
       - name: Commit updated lineup data
         run: |

@@ -9,7 +9,7 @@ from urllib.request import Request, urlopen
 
 
 YEAR = 2026
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_CSV = BASE_DIR / "output" / "standings.csv"
 
 TEAM_SHORT_NAMES = {
