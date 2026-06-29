@@ -4,6 +4,9 @@ __pycache__/
 # Local run logs. GitHub Actions keeps its own logs.
 npb/2026/logs/
 
+# 2025 data is kept locally and should not be pushed going forward.
+npb/2025/
+
 # Local editor / Codex workspace state.
 .agents/
 .codex/
