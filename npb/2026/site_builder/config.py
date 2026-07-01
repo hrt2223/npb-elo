@@ -9,6 +9,7 @@ SITE_DIR = BASE_DIR / "site"
 GAME_RESULTS_CSV = BASE_DIR / "game_results_jp_2026.csv"
 TODAY_PROBABILITY_CSV = OUTPUT_DIR / "today_probabilities.csv"
 TODAY_LINEUPS_CSV = OUTPUT_DIR / "today_lineups.csv"
+UPCOMING_SCHEDULE_CSV = OUTPUT_DIR / "upcoming_schedule.csv"
 STANDINGS_CSV = OUTPUT_DIR / "standings.csv"
 
 TEAM_COLORS = {

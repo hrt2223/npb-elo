@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from .config import GAME_RESULTS_CSV, STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV
-from .schedule import today_probabilities_html
+from .config import GAME_RESULTS_CSV, STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV, UPCOMING_SCHEDULE_CSV
+from .schedule import today_probabilities_html, upcoming_schedule_html
 from .standings import standings_for_section_html
 from .tables import df_to_table, read_csv, read_latest_text
 from .team_pages import build_team_links_html
@@ -25,6 +25,9 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
     if not chart_df.empty:
         chart_df = chart_df.where(pd.notna(chart_df), None)
 
+    today_probability_df = read_csv(TODAY_PROBABILITY_CSV)
+    upcoming_schedule_df = read_csv(UPCOMING_SCHEDULE_CSV)
+
     return {
         "key": str(section["key"]),
         "label": str(section["label"]),
@@ -42,9 +45,21 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "teamLinksHtml": build_team_links_html(str(section["key"])),
         "standingsHtml": standings_for_section_html(read_csv(STANDINGS_CSV), section_key=str(section["key"])),
         "scheduleHtml": today_probabilities_html(
-            read_csv(TODAY_PROBABILITY_CSV),
+            today_probability_df,
             lineup_df=read_csv(TODAY_LINEUPS_CSV),
             results_df=read_csv(GAME_RESULTS_CSV),
             section_key=str(section["key"]),
+        ),
+        "scheduleTomorrowHtml": upcoming_schedule_html(
+            upcoming_schedule_df,
+            today_df=today_probability_df,
+            section_key=str(section["key"]),
+            window="tomorrow",
+        ),
+        "scheduleWeekHtml": upcoming_schedule_html(
+            upcoming_schedule_df,
+            today_df=today_probability_df,
+            section_key=str(section["key"]),
+            window="week",
         ),
     }

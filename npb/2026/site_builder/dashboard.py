@@ -121,6 +121,27 @@ def build_html(payload: list[dict[str, str]]) -> str:
       color: #e0f7ff;
       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.16), 0 10px 28px var(--glow);
     }}
+    .schedule-tabs {{
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px 16px 0;
+    }}
+    .schedule-window-tab {{
+      border: 1px solid var(--line);
+      background: #070b11;
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }}
+    .schedule-window-tab.is-active {{
+      border-color: var(--accent);
+      background: #0b2233;
+      color: #e0f7ff;
+    }}
     .summary {{
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -670,6 +691,11 @@ def build_html(payload: list[dict[str, str]]) -> str:
             <a href="../output/today_lineups.csv">スタメンCSV</a>
           </div>
         </div>
+        <div class="schedule-tabs" aria-label="試合予定の日付切り替え">
+          <button class="schedule-window-tab is-active" data-window="today">今日</button>
+          <button class="schedule-window-tab" data-window="tomorrow">明日</button>
+          <button class="schedule-window-tab" data-window="week">今週</button>
+        </div>
         <div id="scheduleContent">{first["scheduleHtml"]}</div>
       </div>
 
@@ -733,6 +759,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
     const teamColors = {colors_json};
     const byKey = new Map(sections.map((item) => [item.key, item]));
     let activeKey = "{first["key"]}";
+    let activeScheduleWindow = "today";
 
     const fallbackColors = [
       "#0068b7", "#c43d3d", "#1f8a5b", "#7c3aed", "#d97706", "#475467",
@@ -885,6 +912,26 @@ def build_html(payload: list[dict[str, str]]) -> str:
       hit.addEventListener("touchmove", (event) => showAt(event.touches[0]), {{ passive: true }});
     }}
 
+    function scheduleHtmlFor(item) {{
+      if (activeScheduleWindow === "tomorrow") return item.scheduleTomorrowHtml || "";
+      if (activeScheduleWindow === "week") return item.scheduleWeekHtml || "";
+      return item.scheduleHtml || "";
+    }}
+
+    function updateScheduleWindowButtons() {{
+      document.querySelectorAll(".schedule-window-tab").forEach((tab) => {{
+        tab.classList.toggle("is-active", tab.dataset.window === activeScheduleWindow);
+      }});
+    }}
+
+    function setScheduleWindow(windowKey) {{
+      activeScheduleWindow = windowKey;
+      const item = byKey.get(activeKey);
+      if (!item) return;
+      updateScheduleWindowButtons();
+      document.getElementById("scheduleContent").innerHTML = scheduleHtmlFor(item);
+    }}
+
     function setSection(key) {{
       const item = byKey.get(key);
       if (!item) return;
@@ -905,7 +952,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       document.getElementById("tableLink").href = item.tableLink;
       document.getElementById("latestLink").href = item.latestLink;
       document.getElementById("rankingTable").innerHTML = item.rankingHtml;
-      document.getElementById("scheduleContent").innerHTML = item.scheduleHtml;
+      document.getElementById("scheduleContent").innerHTML = scheduleHtmlFor(item);
       document.getElementById("standingsContent").innerHTML = item.standingsHtml;
       document.getElementById("historyTable").innerHTML = item.tableHtml;
       document.getElementById("teamLinks").innerHTML = item.teamLinksHtml || "";
@@ -916,6 +963,10 @@ def build_html(payload: list[dict[str, str]]) -> str:
     document.querySelectorAll(".tab").forEach((tab) => {{
       tab.addEventListener("click", () => setSection(tab.dataset.key));
     }});
+    document.querySelectorAll(".schedule-window-tab").forEach((tab) => {{
+      tab.addEventListener("click", () => setScheduleWindow(tab.dataset.window));
+    }});
+    updateScheduleWindowButtons();
     window.addEventListener("resize", () => drawChart(byKey.get(activeKey)));
     drawChart(byKey.get(activeKey));
   </script>

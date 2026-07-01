@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import html
+from datetime import date as Date
+from datetime import timedelta
 
 import pandas as pd
 
@@ -15,6 +17,13 @@ def schedule_section_df(df: pd.DataFrame, *, section_key: str) -> pd.DataFrame:
     if section_key == "interleague" and "game_type" in df.columns:
         return df[df["game_type"] == "交流戦"].copy()
     return df
+
+
+def parse_iso_date(value: object) -> Date | None:
+    try:
+        return Date.fromisoformat(str(value))
+    except ValueError:
+        return None
 
 
 def display_text(value: object) -> str:
@@ -92,6 +101,80 @@ def probable_starter_html(row: pd.Series) -> str:
         '<span>予告先発</span>'
         f'<strong>{html.escape(home)}: {html.escape(home_text)} / {html.escape(away)}: {html.escape(away_text)}</strong>'
         "</div>"
+    )
+
+
+def upcoming_schedule_html(
+    upcoming_df: pd.DataFrame,
+    *,
+    today_df: pd.DataFrame,
+    section_key: str = "overall",
+    window: str = "tomorrow",
+) -> str:
+    if upcoming_df.empty:
+        return '<div class="empty">明日以降の試合予定はありません</div>'
+
+    if not today_df.empty and "date" in today_df.columns:
+        base_date = parse_iso_date(today_df.iloc[0].get("date"))
+    else:
+        parsed_dates = [parse_iso_date(value) for value in upcoming_df.get("date", [])]
+        parsed_dates = [value for value in parsed_dates if value is not None]
+        base_date = min(parsed_dates) - timedelta(days=1) if parsed_dates else None
+
+    if base_date is None:
+        return '<div class="empty">日付を読み取れません</div>'
+
+    tomorrow = base_date + timedelta(days=1)
+    end_of_week = base_date + timedelta(days=7)
+
+    df = upcoming_df.copy()
+    df["_date"] = pd.to_datetime(df["date"], errors="coerce")
+    if window == "week":
+        df = df[(df["_date"] >= pd.Timestamp(tomorrow)) & (df["_date"] <= pd.Timestamp(end_of_week))]
+        title = f"{tomorrow.isoformat()} - {end_of_week.isoformat()}"
+    else:
+        df = df[df["_date"] == pd.Timestamp(tomorrow)]
+        title = tomorrow.isoformat()
+
+    df = schedule_section_df(df, section_key=section_key)
+    if df.empty:
+        return (
+            f'<div class="schedule-date">対象日: {html.escape(title)}</div>'
+            '<div class="empty">この期間の試合予定はありません</div>'
+        )
+
+    df = df.sort_values(["date", "start_time", "home", "away"])
+    cards = []
+    for _, row in df.iterrows():
+        home = str(row["home"])
+        away = str(row["away"])
+        home_color = TEAM_COLORS.get(home, "#38bdf8")
+        away_color = TEAM_COLORS.get(away, "#94a3b8")
+        venue = " / ".join(
+            value
+            for value in [str(row.get("start_time", "")).strip(), str(row.get("stadium", "")).strip()]
+            if value
+        )
+        cards.append(
+            f"""
+            <article class="schedule-card">
+              <div class="schedule-meta">
+                <span>{html.escape(str(row.get("game_type", "")))}</span>
+                <span>{html.escape(str(row.get("date", "")))}</span>
+              </div>
+              <div class="schedule-teams">
+                <div class="team-name"><span class="team-dot" style="background:{html.escape(home_color)}"></span>{html.escape(home)}</div>
+                <div class="versus">vs</div>
+                <div class="team-name is-away"><span class="team-dot" style="background:{html.escape(away_color)}"></span>{html.escape(away)}</div>
+              </div>
+              <div class="schedule-venue">{html.escape(venue)}</div>
+            </article>
+            """
+        )
+
+    return (
+        f'<div class="schedule-date">対象日: {html.escape(title)}</div>'
+        f'<div class="schedule-grid">{"".join(cards)}</div>'
     )
 
 
