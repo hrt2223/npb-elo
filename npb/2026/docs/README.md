@@ -23,11 +23,13 @@ python scripts/make_elo_tables.py
 python scripts/make_elo_graphs.py
 python scripts/update_today_probabilities.py
 python scripts/fetch_lineups_2026.py
+python scripts/fetch_upcoming_schedule_2026.py
 python scripts/fetch_standings_2026.py
 python scripts/make_site.py
 ```
 
-`scripts/update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters.
+`scripts/update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters. It uses the monthly schedule page first for same-day starters, then fills missing games from the official probable-starter page.
+`scripts/fetch_upcoming_schedule_2026.py` fetches remaining scheduled games from the official monthly schedule pages and writes `output/upcoming_schedule.csv`. Canceled games are not guessed or temporarily placed; rerun the script after official makeup dates are published.
 `scripts/fetch_standings_2026.py` builds standings from `game_results_jp_2026.csv`; it does not wait for the official NPB standings page.
 
 `tasks/daily_update.ps1` runs the same update flow locally. The GitHub Actions workflow is the main automation, so updates can run even when this PC is off.

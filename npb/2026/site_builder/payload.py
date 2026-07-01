@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .config import STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV
+from .config import GAME_RESULTS_CSV, STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV
 from .schedule import today_probabilities_html
 from .standings import standings_for_section_html
 from .tables import df_to_table, read_csv, read_latest_text
@@ -44,6 +44,7 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "scheduleHtml": today_probabilities_html(
             read_csv(TODAY_PROBABILITY_CSV),
             lineup_df=read_csv(TODAY_LINEUPS_CSV),
+            results_df=read_csv(GAME_RESULTS_CSV),
             section_key=str(section["key"]),
         ),
     }

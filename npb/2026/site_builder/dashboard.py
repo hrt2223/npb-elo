@@ -276,6 +276,25 @@ def build_html(payload: list[dict[str, str]]) -> str:
       font-weight: 800;
       overflow-wrap: anywhere;
     }}
+    .matchup-record {{
+      display: grid;
+      gap: 3px;
+      margin: -4px 0 12px;
+      padding: 8px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 6px;
+      background: rgba(2, 6, 23, 0.34);
+      font-size: 12px;
+    }}
+    .matchup-record span {{
+      color: var(--muted);
+      font-size: 11px;
+    }}
+    .matchup-record strong {{
+      color: #f8fafc;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }}
     .probability-row {{
       display: grid;
       grid-template-columns: 44px minmax(96px, 1fr) 44px;
@@ -313,6 +332,43 @@ def build_html(payload: list[dict[str, str]]) -> str:
       color: var(--muted);
       font-size: 11px;
       margin-top: 8px;
+    }}
+    .elo-sim {{
+      margin-top: 10px;
+      padding: 9px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 6px;
+      background: rgba(2, 6, 23, 0.42);
+    }}
+    .elo-sim-title {{
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 6px;
+    }}
+    .elo-sim ul {{
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }}
+    .elo-sim li {{
+      display: grid;
+      grid-template-columns: minmax(64px, 0.42fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+      font-size: 11px;
+    }}
+    .elo-sim li span {{
+      color: #cbd5e1;
+      overflow-wrap: anywhere;
+    }}
+    .elo-sim li strong {{
+      color: #f8fafc;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+      text-align: right;
     }}
     .lineup-box {{
       display: grid;
