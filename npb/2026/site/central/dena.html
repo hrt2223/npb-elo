@@ -26,7 +26,7 @@
       color: var(--ink);
     }
     main {
-      max-width: 1120px;
+      max-width: 1160px;
       margin: 0 auto;
       padding: 28px 22px 40px;
     }
@@ -93,6 +93,18 @@
       font-size: 20px;
       font-weight: 800;
       color: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: start;
+    }
+    .stack {
+      display: grid;
+      gap: 16px;
     }
     .panel {
       border: 1px solid var(--line);
@@ -105,6 +117,44 @@
       padding: 14px 16px;
       border-bottom: 1px solid var(--line);
       background: rgba(21, 27, 38, 0.72);
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .panel-header span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .sparkline-wrap {
+      padding: 14px;
+    }
+    .sparkline {
+      width: 100%;
+      aspect-ratio: 4 / 1;
+      display: block;
+    }
+    .sparkline .axis {
+      stroke: #334155;
+      stroke-width: 1;
+    }
+    .sparkline .trend {
+      fill: none;
+      stroke: var(--team);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .sparkline .latest-point {
+      fill: #f8fafc;
+      stroke: var(--team);
+      stroke-width: 3;
+    }
+    .sparkline text {
+      fill: #cbd5e1;
+      font-size: 14px;
       font-weight: 800;
     }
     .table-wrap { overflow-x: auto; }
@@ -136,17 +186,19 @@
     .result {
       display: inline-grid;
       place-items: center;
-      width: 24px;
+      min-width: 24px;
       height: 24px;
-      border-radius: 50%;
+      border-radius: 999px;
+      padding: 0 6px;
       font-weight: 900;
     }
     .result.win { color: #062e18; background: #4ade80; }
     .result.loss { color: #3f0b0b; background: #f87171; }
     .result.draw { color: #1f2937; background: #cbd5e1; }
     .empty { padding: 24px; color: var(--muted); }
-    @media (max-width: 760px) {
+    @media (max-width: 860px) {
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
       h1 { font-size: 28px; }
     }
     @media (max-width: 520px) {
@@ -165,26 +217,66 @@
 
     <section class="summary">
       <div class="metric">
-        <div class="metric-label">対象</div>
-        <div class="metric-value">直近10試合</div>
+        <div class="metric-label">試合数</div>
+        <div class="metric-value">71</div>
       </div>
       <div class="metric">
-        <div class="metric-label">勝敗</div>
-        <div class="metric-value">2勝8敗0分</div>
+        <div class="metric-label">成績</div>
+        <div class="metric-value">27勝 42敗 2分</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Elo変化</div>
-        <div class="metric-value">-45.0</div>
+        <div class="metric-label">現在Elo</div>
+        <div class="metric-value">1386.7</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Elo上昇率</div>
-        <div class="metric-value">-3.14%</div>
+        <div class="metric-label">開幕からのElo変化</div>
+        <div class="metric-value">-113.3</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">最高Elo</div>
+        <div class="metric-value">1535.2 (2026-05-13)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">最低Elo</div>
+        <div class="metric-value">1386.7 (2026-06-30)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">最大連勝 / 最大連敗</div>
+        <div class="metric-value">6 / 6</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">現在の流れ</div>
+        <div class="metric-value">3連敗中</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-header">Elo推移 <span>最新: 2026-06-30</span></div>
+        
+    <div class="sparkline-wrap">
+      <svg class="sparkline" viewBox="0 0 880 220" role="img" aria-label="Elo推移">
+        <line class="axis" x1="30" y1="24" x2="30" y2="196" />
+        <line class="axis" x1="30" y1="196" x2="850" y2="196" />
+        <polyline class="trend" points="30.0,64.8 31.9,64.8 33.8,80.1 35.7,80.1 37.6,80.1 39.5,80.1 41.4,80.1 43.3,80.1 45.3,94.3 47.2,94.3 49.1,94.3 51.0,94.3 52.9,94.3 54.8,107.6 56.7,107.6 58.6,107.6 60.5,94.3 62.4,107.6 64.3,107.6 66.2,107.6 68.1,107.6 70.0,107.6 72.0,118.0 73.9,118.0 75.8,118.0 77.7,100.0 79.6,100.0 81.5,118.0 83.4,118.0 85.3,118.0 87.2,100.0 89.1,100.0 91.0,100.0 92.9,110.9 94.8,110.9 96.7,110.9 98.7,94.3 100.6,94.3 102.5,110.9 104.4,110.9 106.3,110.9 108.2,110.9 110.1,94.3 112.0,94.3 113.9,94.3 115.8,94.3 117.7,106.5 119.6,106.5 121.5,117.9 123.4,117.9 125.3,106.5 127.3,106.5 129.2,106.5 131.1,106.5 133.0,117.9 134.9,105.3 136.8,105.3 138.7,105.3 140.6,105.3 142.5,105.3 144.4,121.3 146.3,121.3 148.2,121.3 150.1,121.3 152.0,105.3 154.0,121.3 155.9,121.3 157.8,121.3 159.7,121.3 161.6,121.3 163.5,121.3 165.4,121.3 167.3,121.3 169.2,107.0 171.1,107.0 173.0,107.0 174.9,107.0 176.8,121.3 178.7,107.0 180.7,107.0 182.6,93.8 184.5,93.8 186.4,93.8 188.3,93.8 190.2,93.8 192.1,93.8 194.0,103.1 195.9,93.8 197.8,93.8 199.7,93.8 201.6,93.8 203.5,103.1 205.4,103.1 207.3,103.1 209.3,103.1 211.2,103.1 213.1,103.1 215.0,103.1 216.9,103.1 218.8,111.8 220.7,96.0 222.6,96.0 224.5,96.0 226.4,111.8 228.3,111.8 230.2,96.0 232.1,96.0 234.0,96.0 236.0,81.3 237.9,81.3 239.8,81.3 241.7,81.3 243.6,67.7 245.5,67.7 247.4,67.7 249.3,67.7 251.2,81.3 253.1,81.3 255.0,52.6 256.9,52.6 258.8,52.6 260.7,52.6 262.7,52.6 264.6,52.6 266.5,38.6 268.4,38.6 270.3,38.6 272.2,38.6 274.1,38.6 276.0,38.6 277.9,38.6 279.8,38.6 281.7,38.6 283.6,38.6 285.5,38.6 287.4,25.7 289.3,41.5 291.3,41.5 293.2,41.5 295.1,25.7 297.0,25.7 298.9,41.5 300.8,41.5 302.7,41.5 304.6,56.2 306.5,56.2 308.4,56.2 310.3,56.2 312.2,71.2 314.1,71.2 316.0,71.2 318.0,71.2 319.9,71.2 321.8,57.4 323.7,57.4 325.6,57.4 327.5,57.4 329.4,57.4 331.3,71.2 333.2,44.6 335.1,44.6 337.0,44.6 338.9,44.6 340.8,57.1 342.7,44.6 344.7,44.6 346.6,44.6 348.5,44.6 350.4,44.6 352.3,68.7 354.2,57.1 356.1,57.1 358.0,57.1 359.9,57.1 361.8,57.1 363.7,68.7 365.6,68.7 367.5,68.7 369.4,68.7 371.3,51.7 373.3,41.6 375.2,41.6 377.1,41.6 379.0,51.7 380.9,51.7 382.8,41.6 384.7,41.6 386.6,41.6 388.5,46.0 390.4,46.0 392.3,46.0 394.2,46.0 396.1,64.1 398.0,64.1 400.0,64.1 401.9,46.0 403.8,46.0 405.7,64.1 407.6,47.1 409.5,47.1 411.4,47.1 413.3,64.1 415.2,64.1 417.1,64.1 419.0,47.1 420.9,47.1 422.8,47.1 424.7,31.3 426.7,31.3 428.6,31.3 430.5,44.4 432.4,44.4 434.3,44.4 436.2,31.3 438.1,31.3 440.0,31.3 441.9,33.9 443.8,33.9 445.7,33.9 447.6,33.9 449.5,33.9 451.4,33.9 453.3,24.0 455.3,24.0 457.2,24.0 459.1,24.0 461.0,24.0 462.9,28.7 464.8,28.7 466.7,28.7 468.6,28.7 470.5,28.7 472.4,28.7 474.3,28.7 476.2,28.7 478.1,42.0 480.0,54.4 482.0,42.0 483.9,42.0 485.8,42.0 487.7,42.0 489.6,42.0 491.5,54.4 493.4,54.4 495.3,54.4 497.2,54.4 499.1,54.4 501.0,66.0 502.9,80.1 504.8,80.1 506.7,80.1 508.7,66.0 510.6,66.0 512.5,80.1 514.4,80.1 516.3,80.1 518.2,65.4 520.1,65.4 522.0,65.4 523.9,79.6 525.8,79.6 527.7,79.6 529.6,79.6 531.5,79.6 533.4,79.6 535.3,79.6 537.3,92.5 539.2,92.5 541.1,92.5 543.0,79.6 544.9,92.5 546.8,92.5 548.7,92.5 550.6,76.8 552.5,76.8 554.4,76.8 556.3,76.8 558.2,76.8 560.1,91.1 562.0,91.1 564.0,91.1 565.9,91.1 567.8,76.8 569.7,91.1 571.6,91.1 573.5,104.5 575.4,104.5 577.3,104.5 579.2,104.5 581.1,104.5 583.0,89.1 584.9,89.1 586.8,89.1 588.7,89.1 590.7,104.5 592.6,89.1 594.5,89.1 596.4,89.1 598.3,89.1 600.2,97.4 602.1,97.4 604.0,97.4 605.9,105.2 607.8,105.2 609.7,105.2 611.6,97.4 613.5,97.4 615.4,97.4 617.3,105.2 619.3,105.2 621.2,105.2 623.1,84.7 625.0,84.7 626.9,84.7 628.8,84.7 630.7,104.0 632.6,104.0 634.5,104.0 636.4,122.0 638.3,122.0 640.2,122.0 642.1,122.0 644.0,104.0 646.0,122.0 647.9,122.0 649.8,111.1 651.7,111.1 653.6,111.1 655.5,111.1 657.4,111.1 659.3,94.6 661.2,94.6 663.1,94.6 665.0,94.6 666.9,94.6 668.8,111.1 670.7,94.6 672.7,107.1 674.6,107.1 676.5,107.1 678.4,107.1 680.3,107.1 682.2,118.8 684.1,118.8 686.0,118.8 687.9,107.1 689.8,118.8 691.7,118.8 693.6,118.8 695.5,127.6 697.4,127.6 699.3,127.6 701.3,127.6 703.2,136.0 705.1,136.0 707.0,136.0 708.9,127.6 710.8,127.6 712.7,136.0 714.6,143.9 716.5,143.9 718.4,143.9 720.3,136.0 722.2,136.0 724.1,143.9 726.0,143.9 728.0,143.9 729.9,143.9 731.8,143.9 733.7,152.6 735.6,152.6 737.5,133.1 739.4,152.6 741.3,133.1 743.2,152.6 745.1,152.6 747.0,152.6 748.9,133.1 750.8,133.1 752.7,133.1 754.7,133.1 756.6,142.5 758.5,142.5 760.4,142.5 762.3,142.5 764.2,142.5 766.1,155.6 768.0,155.6 769.9,155.6 771.8,155.6 773.7,142.5 775.6,155.6 777.5,155.6 779.4,155.6 781.3,155.6 783.3,155.6 785.2,167.7 787.1,155.6 789.0,167.7 790.9,167.7 792.8,167.7 794.7,167.7 796.6,167.7 798.5,178.5 800.4,178.5 802.3,178.5 804.2,178.5 806.1,178.5 808.0,178.5 810.0,160.9 811.9,160.9 813.8,160.9 815.7,172.2 817.6,172.2 819.5,172.2 821.4,172.2 823.3,172.2 825.2,172.2 827.1,172.2 829.0,172.2 830.9,182.7 832.8,182.7 834.7,182.7 836.7,182.7 838.6,182.7 840.5,196.0 842.4,196.0 844.3,196.0 846.2,196.0 848.1,196.0 850.0,196.0" />
+        <circle class="latest-point" cx="850.0" cy="196.0" r="5" />
+        <text x="850" y="30" text-anchor="end">latest 1386.7</text>
+        <text x="34" y="30">max 1535.2</text>
+        <text x="34" y="213">min 1386.7</text>
+      </svg>
+    </div>
+    
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">対戦相性 <span>2026シーズン</span></div>
+        <div class="table-wrap"><table><thead><tr><th>相手</th><th>試合</th><th>成績</th><th>勝率</th><th>得失点</th><th>差</th></tr></thead><tbody><tr><td>広島</td><td>12</td><td>7勝 4敗 1分</td><td>0.636</td><td>50-50</td><td>+0</td></tr><tr><td>中日</td><td>11</td><td>6勝 4敗 1分</td><td>0.600</td><td>36-29</td><td>+7</td></tr><tr><td>阪神</td><td>10</td><td>5勝 5敗 0分</td><td>0.500</td><td>48-42</td><td>+6</td></tr><tr><td>ロッテ</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>22-15</td><td>+7</td></tr><tr><td>ソフトバンク</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>13-13</td><td>+0</td></tr><tr><td>楽天</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>11-16</td><td>-5</td></tr><tr><td>オリックス</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>6-13</td><td>-7</td></tr><tr><td>西武</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>10-19</td><td>-9</td></tr><tr><td>巨人</td><td>10</td><td>2勝 8敗 0分</td><td>0.200</td><td>18-33</td><td>-15</td></tr><tr><td>ヤクルト</td><td>10</td><td>2勝 8敗 0分</td><td>0.200</td><td>33-50</td><td>-17</td></tr><tr><td>日本ハム</td><td>3</td><td>0勝 3敗 0分</td><td>0.000</td><td>3-11</td><td>-8</td></tr></tbody></table></div>
       </div>
     </section>
 
     <section class="panel">
-      <div class="panel-header">直近10試合の勝敗結果とレーティング変化 <span style="color: var(--muted); font-weight: 600;">最新: 2026-06-30</span></div>
-      <div class="table-wrap"><table><thead><tr><th>日付</th><th>勝敗</th><th>相手</th><th>場所</th><th>スコア</th><th>試合前Elo</th><th>試合後Elo</th><th>変化</th><th>上昇率</th></tr></thead><tbody><tr><td>2026-06-30</td><td><span class="result loss">●</span></td><td>広島</td><td>ホーム</td><td>4-7</td><td>1398.2</td><td>1386.7</td><td>-11.5</td><td>-0.82%</td></tr><tr><td>2026-06-28</td><td><span class="result loss">●</span></td><td>巨人</td><td>ホーム</td><td>1-2</td><td>1407.3</td><td>1398.2</td><td>-9.0</td><td>-0.64%</td></tr><tr><td>2026-06-25</td><td><span class="result loss">●</span></td><td>中日</td><td>ビジター</td><td>1-3</td><td>1417.0</td><td>1407.3</td><td>-9.7</td><td>-0.69%</td></tr><tr><td>2026-06-24</td><td><span class="result win">○</span></td><td>中日</td><td>ビジター</td><td>6-4</td><td>1401.8</td><td>1417.0</td><td>+15.2</td><td>+1.09%</td></tr><tr><td>2026-06-23</td><td><span class="result loss">●</span></td><td>中日</td><td>ビジター</td><td>2-5</td><td>1411.1</td><td>1401.8</td><td>-9.4</td><td>-0.66%</td></tr><tr><td>2026-06-21</td><td><span class="result loss">●</span></td><td>阪神</td><td>ホーム</td><td>1-2</td><td>1421.6</td><td>1411.1</td><td>-10.5</td><td>-0.74%</td></tr><tr><td>2026-06-19</td><td><span class="result loss">●</span></td><td>阪神</td><td>ホーム</td><td>3-11</td><td>1432.9</td><td>1421.6</td><td>-11.3</td><td>-0.79%</td></tr><tr><td>2026-06-14</td><td><span class="result loss">●</span></td><td>ロッテ</td><td>ビジター</td><td>4-6</td><td>1441.0</td><td>1432.9</td><td>-8.1</td><td>-0.57%</td></tr><tr><td>2026-06-13</td><td><span class="result win">○</span></td><td>ロッテ</td><td>ビジター</td><td>16-6</td><td>1424.1</td><td>1441.0</td><td>+16.9</td><td>+1.18%</td></tr><tr><td>2026-06-12</td><td><span class="result loss">●</span></td><td>ロッテ</td><td>ビジター</td><td>2-3</td><td>1431.7</td><td>1424.1</td><td>-7.6</td><td>-0.53%</td></tr></tbody></table></div>
+      <div class="panel-header">直近10試合 <span>試合ごとのElo変化</span></div>
+      <div class="table-wrap"><table><thead><tr><th>日付</th><th>結果</th><th>相手</th><th>球場区分</th><th>スコア</th><th>試合前Elo</th><th>試合後Elo</th><th>変化</th><th>変化率</th></tr></thead><tbody><tr><td>2026-06-30</td><td><span class="result loss">敗</span></td><td>広島</td><td>ホーム</td><td>4-7</td><td>1398.2</td><td>1386.7</td><td>-11.5</td><td>-0.82%</td></tr><tr><td>2026-06-28</td><td><span class="result loss">敗</span></td><td>巨人</td><td>ホーム</td><td>1-2</td><td>1407.3</td><td>1398.2</td><td>-9.0</td><td>-0.64%</td></tr><tr><td>2026-06-25</td><td><span class="result loss">敗</span></td><td>中日</td><td>ビジター</td><td>1-3</td><td>1417.0</td><td>1407.3</td><td>-9.7</td><td>-0.69%</td></tr><tr><td>2026-06-24</td><td><span class="result win">勝</span></td><td>中日</td><td>ビジター</td><td>6-4</td><td>1401.8</td><td>1417.0</td><td>+15.2</td><td>+1.09%</td></tr><tr><td>2026-06-23</td><td><span class="result loss">敗</span></td><td>中日</td><td>ビジター</td><td>2-5</td><td>1411.1</td><td>1401.8</td><td>-9.4</td><td>-0.66%</td></tr><tr><td>2026-06-21</td><td><span class="result loss">敗</span></td><td>阪神</td><td>ホーム</td><td>1-2</td><td>1421.6</td><td>1411.1</td><td>-10.5</td><td>-0.74%</td></tr><tr><td>2026-06-19</td><td><span class="result loss">敗</span></td><td>阪神</td><td>ホーム</td><td>3-11</td><td>1432.9</td><td>1421.6</td><td>-11.3</td><td>-0.79%</td></tr><tr><td>2026-06-14</td><td><span class="result loss">敗</span></td><td>ロッテ</td><td>ビジター</td><td>4-6</td><td>1441.0</td><td>1432.9</td><td>-8.1</td><td>-0.57%</td></tr><tr><td>2026-06-13</td><td><span class="result win">勝</span></td><td>ロッテ</td><td>ビジター</td><td>16-6</td><td>1424.1</td><td>1441.0</td><td>+16.9</td><td>+1.18%</td></tr><tr><td>2026-06-12</td><td><span class="result loss">敗</span></td><td>ロッテ</td><td>ビジター</td><td>2-3</td><td>1431.7</td><td>1424.1</td><td>-7.6</td><td>-0.53%</td></tr></tbody></table></div>
     </section>
   </main>
 </body>
