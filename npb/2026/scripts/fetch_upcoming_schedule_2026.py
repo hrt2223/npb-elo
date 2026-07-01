@@ -52,13 +52,19 @@ def fetch_upcoming_schedule(date_from: str, date_to: str, *, year: int = YEAR) -
     end = parse_date(date_to)
     if end < start:
         raise ValueError("--to must be on or after --from")
+    today = parse_date(today_jst())
+    if start < today:
+        print(f"Clamped --from {start.isoformat()} to today {today.isoformat()}")
+        start = today
+        if end < start:
+            return []
 
     rows: list[dict[str, str]] = []
     seen: set[tuple[str, str, str, str, str, str]] = set()
     try:
         start_date_statuses = {
             (game.date, game.home, game.away): game.status
-            for game in fetch_schedule_for_date(date_from, year=year)
+            for game in fetch_schedule_for_date(start.isoformat(), year=year)
         }
     except HTTPError as exc:
         if exc.code != 404:

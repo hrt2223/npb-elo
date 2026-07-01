@@ -685,7 +685,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
     <section class="top-stack">
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">今日の対戦予定と勝率</div>
+          <div class="panel-title">試合予定</div>
           <div class="links">
             <a href="../output/today_probabilities.csv">CSV</a>
             <a href="../output/today_lineups.csv">スタメンCSV</a>

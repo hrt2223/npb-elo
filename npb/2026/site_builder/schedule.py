@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import html
 from datetime import date as Date
+from datetime import datetime
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
 from .config import LEAGUE_LABELS, TEAM_COLORS
+
+JST = ZoneInfo("Asia/Tokyo")
 
 
 def schedule_section_df(df: pd.DataFrame, *, section_key: str) -> pd.DataFrame:
@@ -24,6 +28,10 @@ def parse_iso_date(value: object) -> Date | None:
         return Date.fromisoformat(str(value))
     except ValueError:
         return None
+
+
+def today_jst_date() -> Date:
+    return datetime.now(JST).date()
 
 
 def display_text(value: object) -> str:
@@ -117,9 +125,7 @@ def upcoming_schedule_html(
     if not today_df.empty and "date" in today_df.columns:
         base_date = parse_iso_date(today_df.iloc[0].get("date"))
     else:
-        parsed_dates = [parse_iso_date(value) for value in upcoming_df.get("date", [])]
-        parsed_dates = [value for value in parsed_dates if value is not None]
-        base_date = min(parsed_dates) - timedelta(days=1) if parsed_dates else None
+        base_date = today_jst_date()
 
     if base_date is None:
         return '<div class="empty">日付を読み取れません</div>'
@@ -242,7 +248,7 @@ def matchup_record_html(results_df: pd.DataFrame, *, date: str, home: str, away:
 
 
 def elo_simulation_html(row: pd.Series, *, status: str) -> str:
-    if status == "中止":
+    if status != "予定":
         return ""
 
     home = str(row["home"])
