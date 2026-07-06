@@ -11,4 +11,4 @@ LOGISTIC_BASE = 10.0
 LOGISTIC_SCALE = 400.0
 
 # Rating points added to the home team when calculating expected score.
-HOME_ADVANTAGE = 35.0
+HOME_ADVANTAGE = 28.0
