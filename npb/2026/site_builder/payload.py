@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from .config import GAME_RESULTS_CSV, STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV, UPCOMING_SCHEDULE_CSV
+from .accuracy import prediction_accuracy_html
 from .schedule import today_probabilities_html, upcoming_schedule_html
 from .standings import standings_for_section_html
 from .tables import df_to_table, read_csv, read_latest_text
@@ -43,6 +44,7 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
         "latestDate": latest_date,
         "chartData": chart_df.to_dict(orient="records") if not chart_df.empty else [],
         "teamLinksHtml": build_team_links_html(str(section["key"])),
+        "accuracyHtml": prediction_accuracy_html(section_dir / "elo_by_game.csv"),
         "standingsHtml": standings_for_section_html(read_csv(STANDINGS_CSV), section_key=str(section["key"])),
         "scheduleHtml": today_probabilities_html(
             today_probability_df,

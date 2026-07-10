@@ -183,6 +183,29 @@ def build_html(payload: list[dict[str, str]]) -> str:
       gap: 18px;
       margin-bottom: 18px;
     }}
+    .accuracy-body {{ padding: 16px 18px 18px; }}
+    .accuracy-metrics {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }}
+    .accuracy-metrics > div {{
+      display: grid;
+      gap: 3px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(5, 12, 21, 0.46);
+    }}
+    .accuracy-metrics span, .accuracy-metrics small, .accuracy-caption {{
+      color: var(--muted);
+      font-size: 11px;
+    }}
+    .accuracy-metrics strong {{ color: #f8fafc; font-size: 22px; line-height: 1.2; }}
+    .accuracy-caption {{ margin: 14px 0 8px; }}
+    .accuracy-table {{ border: 1px solid var(--line); border-radius: 10px; }}
+    .accuracy-table th, .accuracy-table td {{ padding: 8px 10px; }}
+    .calibration-delta {{ color: var(--accent-dark); font-size: 11px; }}
     .layout {{
       display: grid;
       grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.85fr);
@@ -619,6 +642,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .summary {{
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }}
+      .accuracy-metrics {{ grid-template-columns: 1fr; }}
       .layout {{
         grid-template-columns: 1fr;
       }}
@@ -709,6 +733,14 @@ def build_html(payload: list[dict[str, str]]) -> str:
           </div>
         </div>
         <div id="standingsContent">{first["standingsHtml"]}</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">予測精度</div>
+          <div class="links"><a href="../output/elo_by_game.csv">試合別予測CSV</a></div>
+        </div>
+        <div id="accuracyContent">{first["accuracyHtml"]}</div>
       </div>
     </section>
 
@@ -956,6 +988,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       document.getElementById("rankingTable").innerHTML = item.rankingHtml;
       document.getElementById("scheduleContent").innerHTML = scheduleHtmlFor(item);
       document.getElementById("standingsContent").innerHTML = item.standingsHtml;
+      document.getElementById("accuracyContent").innerHTML = item.accuracyHtml;
       document.getElementById("historyTable").innerHTML = item.tableHtml;
       document.getElementById("teamLinks").innerHTML = item.teamLinksHtml || "";
       document.getElementById("teamLinksPanel").style.display = item.teamLinksHtml ? "" : "none";
