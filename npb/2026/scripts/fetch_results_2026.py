@@ -357,8 +357,9 @@ def parse_today_page(tokens: list[str], *, year: int = YEAR) -> list[ResultGame]
     return games
 
 
-def fetch_games(*, year: int = YEAR, months=MONTHS) -> list[ResultGame]:
+def fetch_games(*, year: int = YEAR, months=MONTHS) -> tuple[list[ResultGame], set[int]]:
     games: list[ResultGame] = []
+    fetched_months: set[int] = set()
     for month in months:
         url = NPB_URL.format(year=year, month=month)
         try:
@@ -369,6 +370,7 @@ def fetch_games(*, year: int = YEAR, months=MONTHS) -> list[ResultGame]:
 
         tokens = html_to_tokens(html)
         games.extend(parse_month(tokens, year=year, month=month))
+        fetched_months.add(month)
 
     today_url = TODAY_URL.format(year=year)
     try:
@@ -379,7 +381,10 @@ def fetch_games(*, year: int = YEAR, months=MONTHS) -> list[ResultGame]:
         print(f"Skipped {today_url}: {exc}")
 
     deduped = {(game.date, game.home, game.away, game.stadium): game for game in games}
-    return sorted(deduped.values(), key=lambda game: (game.date, game.start_time, game.game_id))
+    return (
+        sorted(deduped.values(), key=lambda game: (game.date, game.start_time, game.game_id)),
+        fetched_months,
+    )
 
 
 def fetch_today_games(*, year: int = YEAR) -> list[ResultGame]:
@@ -471,6 +476,35 @@ def count_games_from_rows(rows: list[dict[str, object]]) -> int:
     return len({str(row.get(COL_GAME_ID, "")) for row in rows if row.get(COL_GAME_ID)})
 
 
+def count_games_for_month_rows(rows: list[dict[str, object]], *, year: int, month: int) -> int:
+    prefix = f"{year:04d}-{month:02d}-"
+    month_rows = [row for row in rows if str(row.get(COL_DATE, "")).startswith(prefix)]
+    return count_games_from_rows(month_rows)
+
+
+def count_games_for_month(games: list[ResultGame], *, year: int, month: int) -> int:
+    prefix = f"{year:04d}-{month:02d}-"
+    return sum(1 for game in games if game.date.startswith(prefix))
+
+
+def ensure_month_replacement_is_safe(
+    existing_rows: list[dict[str, object]],
+    fetched_games: list[ResultGame],
+    *,
+    year: int,
+    months: list[int],
+) -> None:
+    """Reject a monthly replacement that would silently remove known results."""
+    for month in months:
+        existing_count = count_games_for_month_rows(existing_rows, year=year, month=month)
+        fetched_count = count_games_for_month(fetched_games, year=year, month=month)
+        if existing_count and fetched_count < existing_count:
+            raise RuntimeError(
+                f"Refusing to replace {year}-{month:02d}: fetched {fetched_count} completed games, "
+                f"but the existing CSV has {existing_count}. Existing results were kept."
+            )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Fetch completed 2026 NPB results into CSV.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT_CSV)
@@ -486,13 +520,24 @@ def main() -> None:
     months = args.month if args.month else list(MONTHS)
     if args.today_only:
         games = fetch_today_games(year=args.year)
+        fetched_months: set[int] = set()
     else:
-        games = fetch_games(year=args.year, months=months)
+        games, fetched_months = fetch_games(year=args.year, months=months)
+        missing_months = sorted(set(months) - fetched_months)
+        if missing_months:
+            labels = ", ".join(f"{args.year}-{month:02d}" for month in missing_months)
+            raise RuntimeError(f"Monthly result fetch failed for: {labels}. Existing CSV was not changed.")
 
     fetched_rows = [row for game in games for row in game_to_rows(game)]
     if args.merge_existing:
         existing_rows = read_csv_rows(args.output)
         if not args.today_only:
+            ensure_month_replacement_is_safe(
+                existing_rows,
+                games,
+                year=args.year,
+                months=list(months),
+            )
             existing_rows = without_month_rows(existing_rows, year=args.year, months=list(months))
         merged_rows = merge_rows(existing_rows, fetched_rows)
         write_csv_rows(args.output, merged_rows)
