@@ -6,41 +6,39 @@
   <title>2026 NPB Elo Dashboard</title>
   <style>
     :root {
-      --bg: #060a12;
-      --surface: #0b1220;
-      --surface-2: #121d2d;
-      --surface-3: #17263a;
-      --ink: #f8fafc;
-      --muted: #91a4bd;
-      --line: rgba(148, 163, 184, 0.18);
-      --line-strong: rgba(148, 163, 184, 0.36);
-      --accent: #42c5ff;
-      --accent-dark: #9ae6ff;
-      --gold: #f8c84b;
-      --glow: rgba(66, 197, 255, 0.2);
-      --panel-shadow: 0 24px 70px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+      --bg: #05070b;
+      --surface: #0d1119;
+      --surface-2: #141b27;
+      --surface-3: #1c2635;
+      --ink: #f4f7fb;
+      --muted: #9aa8b8;
+      --line: rgba(207, 220, 235, 0.13);
+      --line-strong: rgba(207, 220, 235, 0.28);
+      --accent: #ef3340;
+      --accent-dark: #ffb5ba;
+      --gold: #74b9ff;
+      --glow: rgba(21, 133, 209, 0.18);
+      --panel-shadow: 0 18px 45px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.045);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: Inter, "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background:
-        radial-gradient(ellipse 60% 34% at 10% -8%, rgba(42, 152, 214, 0.23), transparent 70%),
-        radial-gradient(ellipse 42% 25% at 95% 6%, rgba(248, 200, 75, 0.12), transparent 75%),
-        linear-gradient(180deg, #101d31 0%, #08111e 30%, var(--bg) 72%, #04070d 100%);
+        radial-gradient(ellipse 76% 34% at 50% -10%, rgba(18, 72, 115, 0.3), transparent 67%),
+        linear-gradient(180deg, #0b1420 0%, #060910 35%, #030407 100%);
       color: var(--ink);
       min-height: 100vh;
     }
     header {
-      border-bottom: 1px solid rgba(154, 230, 255, 0.2);
-      background: rgba(5, 11, 20, 0.8);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.28);
+      border-bottom: 1px solid rgba(116, 185, 255, 0.25);
+      background: rgba(4, 7, 12, 0.9);
+      backdrop-filter: blur(16px);
     }
     .header-inner {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 28px 24px 22px;
+      padding: 32px 24px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -52,58 +50,65 @@
       min-width: 0;
     }
     .eyebrow {
-      color: var(--gold);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.16em;
+      color: #9acbff;
+      font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
     h1 {
       margin: 0;
-      font-size: clamp(25px, 3vw, 34px);
-      line-height: 1.2;
-      letter-spacing: 0;
-      color: #f8fafc;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+      letter-spacing: -0.035em;
+      color: var(--ink);
     }
     .updated {
-      color: #dbeafe;
-      font-size: 12px;
+      color: #d7e5f5;
+      font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+      font-size: 11px;
       white-space: nowrap;
-      border: 1px solid rgba(154, 230, 255, 0.2);
-      background: rgba(15, 30, 48, 0.7);
-      border-radius: 999px;
-      padding: 8px 11px;
+      border: 1px solid rgba(116, 185, 255, 0.32);
+      background: rgba(116, 185, 255, 0.08);
+      border-radius: 4px;
+      padding: 9px 11px;
     }
     main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 28px 24px 48px;
+      padding: 32px 24px 64px;
     }
     .tabs {
       display: flex;
-      gap: 7px;
+      gap: 0;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid rgba(207, 220, 235, 0.22);
     }
     .tab {
-      border: 1px solid transparent;
-      background: rgba(15, 27, 43, 0.72);
-      color: var(--ink);
-      border-radius: 999px;
-      padding: 10px 16px;
-      font: inherit;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 0;
+      padding: 12px 16px 10px;
+      font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
       cursor: pointer;
       transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
     }
     .tab:hover {
-      border-color: rgba(154, 230, 255, 0.36);
-      background: #182a41;
+      border-color: #dce9f7;
+      background: transparent;
+      color: var(--ink);
     }
     .tab.is-active {
-      background: linear-gradient(135deg, #0c8cc6, #145cb3);
-      border-color: #72d8ff;
-      color: #f8fdff;
-      box-shadow: 0 8px 24px var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+      background: transparent;
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      box-shadow: none;
     }
     .schedule-tabs {
       display: flex;
@@ -134,9 +139,9 @@
     }
     .metric {
       position: relative;
-      background: linear-gradient(145deg, rgba(24, 40, 62, 0.98), rgba(9, 16, 27, 0.98));
+      background: linear-gradient(145deg, #162131, #0c111a);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 6px;
       padding: 16px 17px;
       min-height: 88px;
       box-shadow: var(--panel-shadow);
@@ -146,12 +151,13 @@
       content: "";
       position: absolute;
       inset: 0 0 auto;
-      height: 3px;
-      background: linear-gradient(90deg, var(--gold), var(--accent), transparent 80%);
+      height: 4px;
+      background: var(--accent);
     }
     .metric-label {
       color: var(--muted);
-      font-size: 12px;
+      font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+      font-size: 11px;
       margin-bottom: 6px;
     }
     .metric-value {
@@ -159,7 +165,7 @@
       font-weight: 800;
       line-height: 1.3;
       overflow-wrap: anywhere;
-      color: #f8fafc;
+      color: var(--ink);
     }
     .top-stack {
       display: grid;
@@ -196,16 +202,16 @@
       align-items: start;
     }
     .panel {
-      background: linear-gradient(145deg, rgba(15, 27, 43, 0.96), rgba(7, 12, 21, 0.97));
+      background: linear-gradient(145deg, #101823, #090d14);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 6px;
       overflow: hidden;
       box-shadow: var(--panel-shadow);
     }
     .panel-header {
       padding: 15px 18px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(90deg, rgba(28, 47, 72, 0.82), rgba(13, 23, 36, 0.58));
+      background: linear-gradient(90deg, #16263b, #0f151e 72%);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -215,7 +221,7 @@
       font-size: 14px;
       letter-spacing: 0.03em;
       font-weight: 800;
-      color: #f8fafc;
+      color: #ffffff;
     }
     .links {
       display: flex;
