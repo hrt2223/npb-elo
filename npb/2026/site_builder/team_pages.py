@@ -262,6 +262,55 @@ def head_to_head_html(team: str) -> str:
     return f"<table><thead>{header}</thead><tbody>{''.join(rows)}</tbody></table>"
 
 
+def monthly_performance_html(games_df: pd.DataFrame) -> str:
+    if games_df.empty:
+        return '<div class="empty">月別成績データがありません</div>'
+
+    df = games_df.copy()
+    df["month"] = pd.to_datetime(df["date"]).dt.strftime("%m月")
+    cards = []
+    for month, group in df.groupby("month", sort=True):
+        wins = int((group["result"] == "勝").sum())
+        losses = int((group["result"] == "敗").sum())
+        draws = int((group["result"] == "分").sum())
+        decided = wins + losses
+        win_pct = wins / decided if decided else 0.0
+        elo_change = float(group.iloc[-1]["elo_after"]) - float(group.iloc[0]["elo_before"])
+        change_class = "up" if elo_change > 0 else "down" if elo_change < 0 else "flat"
+        cards.append(
+            f'<article class="month-card">'
+            f'<div class="month-name">{html.escape(month)}</div>'
+            f'<strong>{wins}勝 {losses}敗 {draws}分</strong>'
+            f'<span>勝率 {win_pct:.3f}</span>'
+            f'<b class="elo-{change_class}">Elo {elo_change:+.1f}</b>'
+            "</article>"
+        )
+    return f'<div class="month-grid">{"".join(cards)}</div>'
+
+
+def matchup_cards_html(team: str) -> str:
+    df = head_to_head_df(team)
+    league_teams = next((teams for teams in LEAGUE_TEAMS.values() if team in teams), [])
+    if league_teams and not df.empty:
+        df = df[df["opponent"].isin([opponent for opponent in league_teams if opponent != team])]
+    if df.empty:
+        return '<div class="empty">リーグ内の対戦相性データがありません</div>'
+
+    cards = []
+    for _, row in df.iterrows():
+        win_pct = float(row["win_pct"])
+        tone = "good" if win_pct > 0.5 else "tough" if win_pct < 0.5 else "even"
+        label = "得意" if tone == "good" else "苦手" if tone == "tough" else "五分"
+        cards.append(
+            f'<article class="matchup-card {tone}">'
+            f'<div class="matchup-card-top"><strong>{html.escape(str(row["opponent"]))}</strong><span>{label}</span></div>'
+            f'<b>{html.escape(str(row["record"]))}</b>'
+            f'<div><span>勝率 {win_pct:.3f}</span><span>得失点 {html.escape(str(row["runs"]))}</span></div>'
+            "</article>"
+        )
+    return f'<div class="matchup-cards">{"".join(cards)}</div>'
+
+
 def team_recent_table_html(recent_df: pd.DataFrame) -> str:
     if recent_df.empty:
         return '<div class="empty">データがありません</div>'
@@ -300,7 +349,8 @@ def build_team_page_html(*, league_key: str, league_label: str, team: str) -> st
     streaks = team_streaks(games_df)
     table_html = team_recent_table_html(recent_df)
     trend_html = team_elo_sparkline_html(history_df)
-    matchup_html = head_to_head_html(team)
+    matchup_html = matchup_cards_html(team)
+    monthly_html = monthly_performance_html(games_df)
     latest_date = str(games_df["date"].max()) if not games_df.empty else "-"
     color = TEAM_COLORS.get(team, "#38bdf8")
 
@@ -463,6 +513,47 @@ def build_team_page_html(*, league_key: str, league_label: str, team: str) -> st
       font-size: 14px;
       font-weight: 800;
     }}
+    .month-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }}
+    .month-card {{
+      display: grid;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 13px;
+      background: rgba(4, 8, 14, .4);
+    }}
+    .month-name {{ color: var(--muted); font-size: 12px; font-weight: 700; }}
+    .month-card strong {{ color: var(--ink); font-size: 16px; }}
+    .month-card span {{ color: #cbd5e1; font-size: 12px; }}
+    .month-card b {{ font-size: 13px; }}
+    .elo-up {{ color: #62d998; }} .elo-down {{ color: #ff7c85; }} .elo-flat {{ color: var(--muted); }}
+    .matchup-cards {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }}
+    .matchup-card {{
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-left: 4px solid #94a3b8;
+      border-radius: 7px;
+      padding: 12px;
+      background: rgba(4, 8, 14, .4);
+    }}
+    .matchup-card.good {{ border-left-color: #4ade80; }}
+    .matchup-card.tough {{ border-left-color: #f87171; }}
+    .matchup-card-top, .matchup-card > div:last-child {{ display: flex; justify-content: space-between; gap: 8px; }}
+    .matchup-card-top strong {{ color: var(--ink); }}
+    .matchup-card-top span {{ color: var(--muted); font-size: 11px; }}
+    .matchup-card b {{ color: #e2e8f0; font-size: 13px; }}
+    .matchup-card > div:last-child {{ color: var(--muted); font-size: 11px; }}
     .table-wrap {{ overflow-x: auto; }}
     table {{
       width: 100%;
@@ -564,8 +655,13 @@ def build_team_page_html(*, league_key: str, league_label: str, team: str) -> st
 
       <div class="panel">
         <div class="panel-header">対戦相性 <span>2026シーズン</span></div>
-        <div class="table-wrap">{matchup_html}</div>
+        {matchup_html}
       </div>
+    </section>
+
+    <section class="panel" style="margin-bottom:16px;">
+      <div class="panel-header">月別成績 <span>勝敗・勝率・Elo変化</span></div>
+      {monthly_html}
     </section>
 
     <section class="panel">

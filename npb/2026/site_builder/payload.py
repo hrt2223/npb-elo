@@ -6,6 +6,7 @@ import pandas as pd
 
 from .config import GAME_RESULTS_CSV, STANDINGS_CSV, TODAY_LINEUPS_CSV, TODAY_PROBABILITY_CSV, UPCOMING_SCHEDULE_CSV
 from .accuracy import prediction_accuracy_html
+from .compare import build_comparison_payload
 from .schedule import today_probabilities_html, upcoming_schedule_html
 from .standings import standings_for_section_html
 from .tables import df_to_table, read_csv, read_latest_text
@@ -64,4 +65,5 @@ def build_section_payload(section: dict[str, object]) -> dict[str, str]:
             section_key=str(section["key"]),
             window="week",
         ),
+        "comparisonData": build_comparison_payload(),
     }

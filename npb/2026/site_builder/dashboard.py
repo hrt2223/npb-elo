@@ -189,6 +189,37 @@ def build_html(payload: list[dict[str, str]]) -> str:
       gap: 18px;
       margin-bottom: 18px;
     }}
+    .compare-controls {{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: end;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(4, 8, 14, 0.42);
+    }}
+    .compare-select {{ display: grid; gap: 7px; }}
+    .compare-select label {{ color: var(--muted); font-family: "JetBrains Mono", "SF Mono", Consolas, monospace; font-size: 11px; letter-spacing: .08em; }}
+    .compare-select select {{
+      width: 100%; padding: 10px 12px; color: var(--ink); background: #0a0f17;
+      border: 1px solid var(--line-strong); border-radius: 5px; font: inherit; font-weight: 700;
+    }}
+    .compare-vs {{ color: var(--accent); font-family: "JetBrains Mono", "SF Mono", Consolas, monospace; font-size: 12px; font-weight: 800; padding-bottom: 11px; }}
+    .compare-body {{ padding: 18px; }}
+    .compare-stats {{ display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }}
+    .compare-stat {{ border: 1px solid var(--line); background: rgba(255,255,255,.025); border-radius: 6px; padding: 12px; text-align: center; }}
+    .compare-stat span {{ display: block; color: var(--muted); font-size: 11px; margin-bottom: 5px; }}
+    .compare-stat strong {{ color: var(--ink); font-size: 17px; }}
+    .compare-chart {{ width: 100%; height: 230px; display: block; border: 1px solid var(--line); border-radius: 6px; background: #090d14; margin-bottom: 16px; }}
+    .compare-recent {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }}
+    .compare-team {{ border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }}
+    .compare-team-title {{ padding: 10px 12px; color: var(--ink); font-weight: 800; border-bottom: 1px solid var(--line); }}
+    .compare-games {{ margin: 0; padding: 0; list-style: none; }}
+    .compare-games li {{ display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 8px; padding: 7px 10px; border-bottom: 1px solid rgba(207,220,235,.08); font-size: 12px; align-items: center; }}
+    .compare-games li:last-child {{ border-bottom: 0; }}
+    .compare-games small {{ color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .compare-result {{ font-weight: 900; }}
+    .compare-result.win {{ color: #61d998; }} .compare-result.loss {{ color: #ff7c85; }} .compare-result.draw {{ color: #c7d2df; }}
     .accuracy-body {{ padding: 16px 18px 18px; }}
     .accuracy-metrics {{
       display: grid;
@@ -677,6 +708,9 @@ def build_html(payload: list[dict[str, str]]) -> str:
       .lineup-box {{
         grid-template-columns: 1fr;
       }}
+      .compare-controls, .compare-recent {{ grid-template-columns: 1fr; }}
+      .compare-vs {{ padding: 0; text-align: center; }}
+      .compare-stats {{ grid-template-columns: 1fr; }}
     }}
   </style>
 </head>
@@ -748,6 +782,20 @@ def build_html(payload: list[dict[str, str]]) -> str:
         </div>
         <div id="accuracyContent">{first["accuracyHtml"]}</div>
       </div>
+
+      <div class="panel" id="comparisonPanel">
+        <div class="panel-header"><div class="panel-title">チーム比較</div><div class="links">Elo・直近10試合・今季対戦成績</div></div>
+        <div class="compare-controls">
+          <div class="compare-select"><label for="compareTeamA">TEAM A</label><select id="compareTeamA"></select></div>
+          <div class="compare-vs">VS</div>
+          <div class="compare-select"><label for="compareTeamB">TEAM B</label><select id="compareTeamB"></select></div>
+        </div>
+        <div class="compare-body">
+          <div class="compare-stats" id="compareStats"></div>
+          <svg class="compare-chart" id="compareChart" role="img" aria-label="2球団のElo推移比較"></svg>
+          <div class="compare-recent" id="compareRecent"></div>
+        </div>
+      </div>
     </section>
 
     <section class="layout">
@@ -800,6 +848,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
     const byKey = new Map(sections.map((item) => [item.key, item]));
     let activeKey = "{first["key"]}";
     let activeScheduleWindow = "today";
+    const comparisonData = sections[0].comparisonData || {{ teams: [] }};
 
     const fallbackColors = [
       "#0068b7", "#c43d3d", "#1f8a5b", "#7c3aed", "#d97706", "#475467",
@@ -972,6 +1021,67 @@ def build_html(payload: list[dict[str, str]]) -> str:
       document.getElementById("scheduleContent").innerHTML = scheduleHtmlFor(item);
     }}
 
+    function compareResultClass(result) {{
+      return result === "勝" ? "win" : result === "敗" ? "loss" : "draw";
+    }}
+
+    function comparisonTeamByName(name) {{
+      return comparisonData.teams.find((team) => team.team === name);
+    }}
+
+    function drawComparisonChart(left, right) {{
+      const svg = document.getElementById("compareChart");
+      const series = [left, right];
+      const points = series.flatMap((team) => team.history || []);
+      svg.innerHTML = "";
+      if (!points.length) return;
+      const width = 1000, height = 230, margin = {{ top: 22, right: 24, bottom: 30, left: 42 }};
+      const min = Math.floor((Math.min(...points.map((point) => point.elo)) - 10) / 10) * 10;
+      const max = Math.ceil((Math.max(...points.map((point) => point.elo)) + 10) / 10) * 10;
+      const count = Math.max(...series.map((team) => team.history.length));
+      const x = (index) => margin.left + (index / Math.max(count - 1, 1)) * (width - margin.left - margin.right);
+      const y = (value) => margin.top + ((max - value) / Math.max(max - min, 1)) * (height - margin.top - margin.bottom);
+      svg.setAttribute("viewBox", `0 0 ${{width}} ${{height}}`);
+      [min, (min + max) / 2, max].forEach((value) => {{
+        const yy = y(value);
+        svg.appendChild(svgEl("line", {{ x1: margin.left, x2: width - margin.right, y1: yy, y2: yy, stroke: "#263241" }}));
+        svg.appendChild(svgEl("text", {{ x: margin.left - 8, y: yy + 4, "text-anchor": "end", fill: "#9aa8b8", "font-size": 11 }}, value.toFixed(0)));
+      }});
+      series.forEach((team) => {{
+        const path = team.history.map((point, index) => `${{index ? "L" : "M"}} ${{x(index).toFixed(1)}} ${{y(point.elo).toFixed(1)}}`).join(" ");
+        svg.appendChild(svgEl("path", {{ d: path, fill: "none", stroke: team.color, "stroke-width": 3.5, "stroke-linecap": "round" }}));
+      }});
+    }}
+
+    function renderComparison() {{
+      const left = comparisonTeamByName(document.getElementById("compareTeamA").value);
+      const right = comparisonTeamByName(document.getElementById("compareTeamB").value);
+      if (!left || !right) return;
+      const matchup = left.matchups?.[right.team] || {{ wins: 0, losses: 0, draws: 0 }};
+      document.getElementById("compareStats").innerHTML = `
+        <div class="compare-stat"><span>現在Elo</span><strong style="color:${{left.color}}">${{left.team}} ${{left.elo}}</strong><br><strong style="color:${{right.color}}">${{right.team}} ${{right.elo}}</strong></div>
+        <div class="compare-stat"><span>今季対戦成績</span><strong>${{left.team}} ${{matchup.wins}}勝 ${{matchup.losses}}敗${{matchup.draws ? ` ${{matchup.draws}}分` : ""}}</strong></div>
+        <div class="compare-stat"><span>今季成績</span><strong>${{left.team}} ${{left.record}}</strong><br><strong>${{right.team}} ${{right.record}}</strong></div>`;
+      document.getElementById("compareRecent").innerHTML = [left, right].map((team) => `
+        <div class="compare-team"><div class="compare-team-title" style="border-left:4px solid ${{team.color}}">${{team.team}} — 直近10試合</div>
+        <ol class="compare-games">${{team.recent.map((game) => `<li><span class="compare-result ${{compareResultClass(game.result)}}">${{game.result}}</span><small>${{game.date.slice(5)}} vs ${{game.opponent}} (${{game.score}})</small><strong>${{game.change >= 0 ? "+" : ""}}${{game.change.toFixed(1)}}</strong></li>`).join("")}}</ol></div>`).join("");
+      drawComparisonChart(left, right);
+    }}
+
+    function initializeComparison() {{
+      const teams = comparisonData.teams || [];
+      const leftSelect = document.getElementById("compareTeamA");
+      const rightSelect = document.getElementById("compareTeamB");
+      const options = teams.map((team) => `<option value="${{team.team}}">${{team.team}}</option>`).join("");
+      leftSelect.innerHTML = options;
+      rightSelect.innerHTML = options;
+      leftSelect.value = teams[0]?.team || "";
+      rightSelect.value = teams[1]?.team || "";
+      leftSelect.addEventListener("change", renderComparison);
+      rightSelect.addEventListener("change", renderComparison);
+      renderComparison();
+    }}
+
     function setSection(key) {{
       const item = byKey.get(key);
       if (!item) return;
@@ -1008,6 +1118,7 @@ def build_html(payload: list[dict[str, str]]) -> str:
       tab.addEventListener("click", () => setScheduleWindow(tab.dataset.window));
     }});
     updateScheduleWindowButtons();
+    initializeComparison();
     window.addEventListener("resize", () => drawChart(byKey.get(activeKey)));
     drawChart(byKey.get(activeKey));
   </script>
