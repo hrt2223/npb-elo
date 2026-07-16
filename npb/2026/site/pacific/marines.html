@@ -157,6 +157,47 @@
       font-size: 14px;
       font-weight: 800;
     }
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    .month-card {
+      display: grid;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 13px;
+      background: rgba(4, 8, 14, .4);
+    }
+    .month-name { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .month-card strong { color: var(--ink); font-size: 16px; }
+    .month-card span { color: #cbd5e1; font-size: 12px; }
+    .month-card b { font-size: 13px; }
+    .elo-up { color: #62d998; } .elo-down { color: #ff7c85; } .elo-flat { color: var(--muted); }
+    .matchup-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    .matchup-card {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-left: 4px solid #94a3b8;
+      border-radius: 7px;
+      padding: 12px;
+      background: rgba(4, 8, 14, .4);
+    }
+    .matchup-card.good { border-left-color: #4ade80; }
+    .matchup-card.tough { border-left-color: #f87171; }
+    .matchup-card-top, .matchup-card > div:last-child { display: flex; justify-content: space-between; gap: 8px; }
+    .matchup-card-top strong { color: var(--ink); }
+    .matchup-card-top span { color: var(--muted); font-size: 11px; }
+    .matchup-card b { color: #e2e8f0; font-size: 13px; }
+    .matchup-card > div:last-child { color: var(--muted); font-size: 11px; }
     .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
@@ -270,8 +311,13 @@
 
       <div class="panel">
         <div class="panel-header">対戦相性 <span>2026シーズン</span></div>
-        <div class="table-wrap"><table><thead><tr><th>相手</th><th>試合</th><th>成績</th><th>勝率</th><th>得失点</th><th>差</th></tr></thead><tbody><tr><td>広島</td><td>3</td><td>3勝 0敗 0分</td><td>1.000</td><td>14-8</td><td>+6</td></tr><tr><td>楽天</td><td>12</td><td>9勝 3敗 0分</td><td>0.750</td><td>56-45</td><td>+11</td></tr><tr><td>ヤクルト</td><td>3</td><td>2勝 1敗 0分</td><td>0.667</td><td>10-3</td><td>+7</td></tr><tr><td>中日</td><td>3</td><td>2勝 1敗 0分</td><td>0.667</td><td>10-14</td><td>-4</td></tr><tr><td>DeNA</td><td>3</td><td>2勝 1敗 0分</td><td>0.667</td><td>15-22</td><td>-7</td></tr><tr><td>ソフトバンク</td><td>11</td><td>4勝 6敗 1分</td><td>0.400</td><td>41-43</td><td>-2</td></tr><tr><td>西武</td><td>13</td><td>5勝 8敗 0分</td><td>0.385</td><td>46-43</td><td>+3</td></tr><tr><td>日本ハム</td><td>13</td><td>5勝 8敗 0分</td><td>0.385</td><td>45-65</td><td>-20</td></tr><tr><td>オリックス</td><td>14</td><td>5勝 9敗 0分</td><td>0.357</td><td>36-60</td><td>-24</td></tr><tr><td>阪神</td><td>3</td><td>1勝 2敗 0分</td><td>0.333</td><td>7-7</td><td>+0</td></tr><tr><td>巨人</td><td>3</td><td>0勝 1敗 2分</td><td>0.000</td><td>5-11</td><td>-6</td></tr></tbody></table></div>
+        <div class="matchup-cards"><article class="matchup-card good"><div class="matchup-card-top"><strong>楽天</strong><span>得意</span></div><b>9勝 3敗 0分</b><div><span>勝率 0.750</span><span>得失点 56-45</span></div></article><article class="matchup-card tough"><div class="matchup-card-top"><strong>ソフトバンク</strong><span>苦手</span></div><b>4勝 6敗 1分</b><div><span>勝率 0.400</span><span>得失点 41-43</span></div></article><article class="matchup-card tough"><div class="matchup-card-top"><strong>西武</strong><span>苦手</span></div><b>5勝 8敗 0分</b><div><span>勝率 0.385</span><span>得失点 46-43</span></div></article><article class="matchup-card tough"><div class="matchup-card-top"><strong>日本ハム</strong><span>苦手</span></div><b>5勝 8敗 0分</b><div><span>勝率 0.385</span><span>得失点 45-65</span></div></article><article class="matchup-card tough"><div class="matchup-card-top"><strong>オリックス</strong><span>苦手</span></div><b>5勝 9敗 0分</b><div><span>勝率 0.357</span><span>得失点 36-60</span></div></article></div>
       </div>
+    </section>
+
+    <section class="panel" style="margin-bottom:16px;">
+      <div class="panel-header">月別成績 <span>勝敗・勝率・Elo変化</span></div>
+      <div class="month-grid"><article class="month-card"><div class="month-name">03月</div><strong>2勝 2敗 0分</strong><span>勝率 0.500</span><b class="elo-down">Elo -1.2</b></article><article class="month-card"><div class="month-name">04月</div><strong>10勝 12敗 0分</strong><span>勝率 0.455</span><b class="elo-down">Elo -17.2</b></article><article class="month-card"><div class="month-name">05月</div><strong>13勝 13敗 0分</strong><span>勝率 0.500</span><b class="elo-up">Elo +11.0</b></article><article class="month-card"><div class="month-name">06月</div><strong>9勝 6敗 3分</strong><span>勝率 0.600</span><b class="elo-up">Elo +31.4</b></article><article class="month-card"><div class="month-name">07月</div><strong>4勝 7敗 0分</strong><span>勝率 0.364</span><b class="elo-down">Elo -32.1</b></article></div>
     </section>
 
     <section class="panel">
