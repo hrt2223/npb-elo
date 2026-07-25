@@ -1,13 +1,13 @@
 2026 NPB Elo latest ranking - Central League
-Updated at: 2026-07-24 03:37:32
+Updated at: 2026-07-25 03:33:30
 CSV: game_results_jp_2026.csv
-Games: 320
-Period: 2026-03-27 - 2026-07-22
+Games: 323
+Period: 2026-03-27 - 2026-07-24
 
  rank team final_elo
-    1   阪神    1583.7
-    2   巨人    1575.1
-    3 ヤクルト    1412.0
-    4 DeNA    1408.2
-    5   広島    1377.6
-    6   中日    1363.0
+    1   巨人    1587.4
+    2   阪神    1571.4
+    3 ヤクルト    1423.6
+    4 DeNA    1396.1
+    5   中日    1375.2
+    6   広島    1366.0
