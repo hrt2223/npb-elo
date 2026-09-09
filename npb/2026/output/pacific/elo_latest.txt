@@ -1,5 +1,5 @@
 2026 NPB Elo latest ranking - Pacific League
-Updated at: 2026-09-08 18:08:46
+Updated at: 2026-09-09 04:33:22
 CSV: game_results_jp_2026.csv
 Games: 427
 Period: 2026-03-27 - 2026-09-08
