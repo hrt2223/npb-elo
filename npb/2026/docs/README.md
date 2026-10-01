@@ -25,8 +25,11 @@ python scripts/update_today_probabilities.py
 python scripts/fetch_lineups_2026.py
 python scripts/fetch_upcoming_schedule_2026.py
 python scripts/fetch_standings_2026.py
+python scripts/build_research_database.py
 python scripts/make_site.py
 ```
+
+研究用に、試合直前の打者OPS・投手ERA/WHIP・出場試合数を保存するSQLiteデータベースは [RESEARCH_DATABASE.md](RESEARCH_DATABASE.md) を参照。
 
 `scripts/update_today_probabilities.py` fetches today's schedule, Elo win probabilities, and probable starters. It uses the monthly schedule page first for same-day starters, then fills missing games from the official probable-starter page.
 `scripts/fetch_upcoming_schedule_2026.py` fetches remaining scheduled games from the official monthly schedule pages and writes `output/upcoming_schedule.csv`. Canceled games are not guessed or temporarily placed; rerun the script after official makeup dates are published.

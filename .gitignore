@@ -1,6 +1,10 @@
 __pycache__/
 *.py[cod]
 
+# Research database is a reproducible local data cache; do not commit it.
+npb/2026/research/*.sqlite
+npb/2026/research/team_exports/
+
 # Local run logs. GitHub Actions keeps its own logs.
 npb/2026/logs/
 
