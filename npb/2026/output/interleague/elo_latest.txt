@@ -1,5 +1,5 @@
 2026 NPB Elo latest ranking - Interleague
-Updated at: 2026-10-05 21:41:29
+Updated at: 2026-10-06 06:12:22
 CSV: game_results_jp_2026.csv
 Games: 108
 Period: 2026-05-26 - 2026-06-17
