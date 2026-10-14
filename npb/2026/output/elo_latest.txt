@@ -1,15 +1,15 @@
 2026 NPB Elo latest ranking - All NPB
-Updated at: 2026-10-14 04:45:32
+Updated at: 2026-10-14 18:58:53
 CSV: game_results_jp_2026.csv
-Games: 861
-Period: 2026-03-27 - 2026-10-12
+Games: 863
+Period: 2026-03-27 - 2026-10-14
 
  rank   team final_elo
-    1 ソフトバンク    1864.6
-    2   日本ハム    1659.2
+    1 ソフトバンク    1875.0
+    2   日本ハム    1648.7
     3     西武    1645.5
-    4     阪神    1585.9
-    5   DeNA    1573.7
+    4   DeNA    1586.0
+    5     阪神    1573.7
     6     巨人    1536.2
     7    ロッテ    1406.3
     8     広島    1383.6
