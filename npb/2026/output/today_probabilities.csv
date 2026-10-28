@@ -1,1 +1,2 @@
 ﻿date,game_type,home,away,stadium,start_time,status,home_probable_starter,away_probable_starter,home_elo,away_elo,home_win_probability,away_win_probability,home_delta_if_home_win,away_delta_if_home_win,home_delta_if_away_win,away_delta_if_away_win,home_delta_if_draw,away_delta_if_draw
+2026-10-28,交流戦,ソフトバンク,DeNA,みずほPayPay,18:00,予定,前田悠,平良,1925.8,1591.5,60.0,40.0,9.6,-9.6,-14.4,14.4,-2.4,2.4
